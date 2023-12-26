@@ -2,6 +2,7 @@
   "name": "mrrs",
   "private": true,
   "version": "0.0.3",
+  "license": "MIT",
   "scripts": {
     "dev": "run-p dev:*",
     "dev:service": "cd packages && cd mrrs_service && pnpm run start:dev",
@@ -9,7 +10,10 @@
     "preview": "vite preview",
     "commit": "cz",
     "prepare": "husky install",
-    "release": "standard-version"
+    "release": "standard-version",
+    "lint": "eslint ./ --ext .ts,.js,.json --max-warnings=0",
+    "format": "prettier --config .prettierrc . --write",
+    "format-watch": "onchange -d 1000 '**/*' -- prettier --config .prettierrc --write {{changed}}"
   },
   "config": {
     "commitizen": {
@@ -22,13 +26,20 @@
   "devDependencies": {
     "@commitlint/cli": "^18.4.3",
     "@commitlint/config-conventional": "^18.4.3",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
     "@vitejs/plugin-vue": "^4.5.2",
     "commitizen": "^4.3.0",
     "cz-customizable": "^7.0.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
     "husky": "^8.0.0",
     "npm-run-all": "^4.1.5",
+    "onchange": "^7.1.0",
+    "prettier": "^3.0.0",
     "standard-version": "^9.5.0",
-    "typescript": "^5.2.2",
+    "typescript": "^5.3.3",
     "vite": "^5.0.8",
     "vue-tsc": "^1.8.25"
   }
