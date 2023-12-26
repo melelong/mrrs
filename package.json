@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "run-p dev:*",
     "dev:service": "cd packages && cd mrrs_service && pnpm run start:dev",
-    "build": "vue-tsc && vite build",
+    "dev:admin": "cd packages && cd mrrs_admin && pnpm run dev",
+    "dev:frontend": "cd packages && cd mrrs_frontend && pnpm run dev",
+    "docker": "run-p docker:*",
     "preview": "vite preview",
     "commit": "cz",
     "prepare": "husky install",
@@ -15,14 +17,6 @@
     "lint:fix": "eslint ./ --ext .ts,.js,.json --max-warnings=0 --fix",
     "format": "prettier --config .prettierrc . --write",
     "format:dev": "onchange -d 1000 '**/*' -- prettier --config .prettierrc --write {{changed}}"
-  },
-  "config": {
-    "commitizen": {
-      "path": "node_modules/cz-customizable"
-    },
-    "lint-staged": {
-      "**/*": "prettier --write --ignore-unknown"
-    }
   },
   "dependencies": {
     "vue": "^3.3.11"

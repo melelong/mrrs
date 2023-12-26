@@ -1,7 +1,7 @@
 FROM node:20.10.0-alpine3.19 as build-stage
 WORKDIR /app
 
-RUN npm i -g pnpm
+RUN npm i pnpm
 
 COPY package.json .
 
