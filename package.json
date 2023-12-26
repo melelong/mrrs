@@ -12,12 +12,16 @@
     "prepare": "husky install",
     "release": "standard-version",
     "lint": "eslint ./ --ext .ts,.js,.json --max-warnings=0",
+    "lint:fix": "eslint ./ --ext .ts,.js,.json --max-warnings=0 --fix",
     "format": "prettier --config .prettierrc . --write",
-    "format-watch": "onchange -d 1000 '**/*' -- prettier --config .prettierrc --write {{changed}}"
+    "format:dev": "onchange -d 1000 '**/*' -- prettier --config .prettierrc --write {{changed}}"
   },
   "config": {
     "commitizen": {
       "path": "node_modules/cz-customizable"
+    },
+    "lint-staged": {
+      "**/*": "prettier --write --ignore-unknown"
     }
   },
   "dependencies": {
@@ -35,6 +39,7 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
     "husky": "^8.0.0",
+    "lint-staged": "^15.2.0",
     "npm-run-all": "^4.1.5",
     "onchange": "^7.1.0",
     "prettier": "^3.0.0",
