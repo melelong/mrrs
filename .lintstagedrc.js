@@ -27,12 +27,14 @@ const removeIgnoredFiles = async (files) => {
 // 导出一个配置对象，它将被 lint-staged 使用，lint-staged 允许我们对 git 暂存区的文件执行命令
 module.exports = {
   // 这里配置了一个针对所有文件的 lint 任务
-  '*': async (files) => {
+  '*.{js,jsx,ts,tsx}': async (files) => {
     // 首先过滤掉 ESLint 配置中被忽略的文件
-    const filesToLint = await removeIgnoredFiles(files);
+    const res = await removeIgnoredFiles(files)
+    console.log(res);
+    const filesToLint = res;
 
     // 返回一个数组，包含了要执行的 ESLint 命令
     // --max-warnings=0 标志将导致即使只有警告，也将退出状态码设置为错误，这可以强制开发者解决所有的警告
-    return [`eslint ${filesToLint} --max-warnings=0`];
+    return [`npx eslint ${filesToLint} --max-warnings=0 --fix`, `npx prettier -w ${filesToLint}`];
   },
 };

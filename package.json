@@ -19,6 +19,9 @@
   "config": {
     "commitizen": {
       "path": "node_modules/cz-customizable"
+    },
+    "lint-staged": {
+      "**/*": "prettier --write --ignore-unknown"
     }
   },
   "dependencies": {
