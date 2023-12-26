@@ -12,8 +12,9 @@
     "prepare": "husky install",
     "release": "standard-version",
     "lint": "eslint ./ --ext .ts,.js,.json --max-warnings=0",
+    "lint:fix": "eslint ./ --ext .ts,.js,.json --max-warnings=0 --fix",
     "format": "prettier --config .prettierrc . --write",
-    "format-watch": "onchange -d 1000 '**/*' -- prettier --config .prettierrc --write {{changed}}"
+    "format:dev": "onchange -d 1000 '**/*' -- prettier --config .prettierrc --write {{changed}}"
   },
   "config": {
     "commitizen": {
