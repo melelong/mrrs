@@ -9,6 +9,7 @@ const { ESLint } = require('eslint');
  * 文件路径之间用空格分隔。
  */
 const removeIgnoredFiles = async (files) => {
+  console.log('执行');
   // 创建一个 ESLint 实例
   const eslint = new ESLint();
 
