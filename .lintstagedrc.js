@@ -13,7 +13,9 @@ const removeIgnoredFiles = async (files) => {
 
   // 使用 map 方法对每个文件路径调用 isPathIgnored 方法来确定其是否被 ESLint 忽略
   // Promise.all 等待所有的异步检查操作完成
-  const ignoredFiles = await Promise.all(files.map((file) => eslint.isPathIgnored(file)));
+  const ignoredFiles = await Promise.all(
+    files.map((file) => eslint.isPathIgnored(file)),
+  );
 
   // 使用 filter 方法创建一个新的数组，该数组只包含不被 ESLint 忽略的文件
   const filteredFiles = files.filter((_, i) => !ignoredFiles[i]);
@@ -32,6 +34,9 @@ module.exports = {
     // 返回一个命令数组，其中包含了调用 ESLint 和 Prettier 的命令
     // npx eslint ... --fix 参数会自动修复可以修复的问题
     // npx prettier -w ... 将格式化代码，-w 代表写入更改
-    return [`npx eslint ${filesToLint} --max-warnings=0 --fix`, `npx prettier --config .prettierrc . -w`];
+    return [
+      `npx eslint ${filesToLint} --max-warnings=0 --fix`,
+      `npx prettier --config .prettierrc . -w`,
+    ];
   },
 };

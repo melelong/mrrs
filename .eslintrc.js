@@ -19,7 +19,7 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/eslint-recommended',
-    'prettier',
+    'plugin:prettier/recommended',
   ],
   // 该配置项指示要加载的插件，这里
   // @typescript-eslint 插件使得我们能够在我们的存储库中使用typescript-eslint包定义的规则集。
@@ -35,5 +35,6 @@ module.exports = {
     'prefer-arrow-callback': 'off',
     // 禁止使用 TypeScript 中的 any 类型。any 类型基本上是一个“逃逸口”——它允许你绕过类型检查，这与 TypeScript 强类型的理念相违背，默认是禁止使用any
     '@typescript-eslint/no-explicit-any': 'off',
+    'linebreak-style': ['error', 'unix'],
   },
 };
