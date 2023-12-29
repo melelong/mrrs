@@ -2,16 +2,17 @@
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "module": "ESNext",
+    "module": "ESNext", // 保持使用 ESModule 语法
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
-
-    /* Bundler mode */
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
+    "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "noEmit": true,
+    "noEmit": false,
+    "declaration": true,
+    "outDir": "./dist",
+    "esModuleInterop": true, // 添加此选项以允许默认导入
+    "allowSyntheticDefaultImports": true, // 添加此选项以允许默认导入
 
     /* Linting */
     "strict": true,
