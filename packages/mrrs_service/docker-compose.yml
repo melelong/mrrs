@@ -1,0 +1,53 @@
+version: '3'
+networks: # 定义网络
+  dev_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.3.0/16
+
+services:
+  nest-container:
+    restart: always
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    depends_on:
+      - mysql-container
+      - redis-container
+    ports:
+      - '3001:3000'
+    networks:
+      dev_network:
+        ipv4_address: 192.168.3.2 
+  mysql-container:
+    restart: always
+    image: bitnami/mysql:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=Aa123456
+    ports:
+      - '3306:3306'
+      - '33060:33060'
+    volumes:
+      - ./sql/mysql/data:/var/lib/mysql
+      - ./sql/mysql/config:/etc/mysql/conf.d
+      - ./sql/mysql/log:/var/log/mysql
+      - ./sql/mysql/run:/var/run/mysqld
+    networks:
+      dev_network:
+        ipv4_address: 192.168.3.3
+  redis-container:
+    restart: always
+    image: bitnami/redis:latest
+    environment:
+      - REDIS_PASSWORD=Aa123456
+    ports:
+      - '6379:6379'
+    volumes:
+      - ./sql/redis/data:/data
+      - ./sql/redis/config:/etc/redis
+      - ./sql/redis/log:/var/log/redis
+      - ./sql/redis/run:/var/run/redis
+    networks:
+      dev_network:
+        ipv4_address: 192.168.3.4

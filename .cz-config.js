@@ -1,7 +1,19 @@
 module.exports = {
   allowBreakingChanges: ['feat', 'fix'],
   allowCustomScopes: true,
-  scopes: [],
+  // 区域
+  scopes: [
+    { name: '前端公共接口' },
+    { name: '前端公共组件库' },
+    { name: '公共工具库' },
+    { name: '后台' },
+    { name: '前台' },
+    { name: '服务接口' },
+    { name: 'Docker-Compose' },
+    { name: '镜像文件' },
+    { name: '数据库文件' },
+  ],
+  // 提交类型
   types: [
     {
       name: '功能：新增功能，迭代项目需求 (feat)',
