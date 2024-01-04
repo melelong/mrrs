@@ -7,29 +7,30 @@ import { Permission } from 'src/user/entities/permission.entity';
 import { User } from 'src/user/entities/user.entity';
 import { Role } from 'src/user/entities/role.entity';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
-
-const dataSourceOptions: MysqlConnectionOptions = {
-  type: 'mysql',
-  // host: '192.168.3.3',
-  host: '127.0.0.1',
-  port: 3306,
-  username: 'root',
-  password: 'Aa123456',
-  synchronize: true,
-  logging: true,
-  poolSize: 10,
-  connectorPackage: 'mysql2',
-  extra: {
-    authPlugin: 'sha256_password',
-  },
-};
-const database = 'mrrs';
+import { ConfigService } from '@nestjs/config';
 
 @Global()
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      useFactory: async () => {
+      useFactory: async (configService: ConfigService) => {
+        // 公共配置
+        const dataSourceOptions: MysqlConnectionOptions = {
+          type: 'mysql',
+          host: configService.get('mysql_server_host'),
+          port: configService.get('mysql_server_port'),
+          username: configService.get('mysql_server_username'),
+          password: configService.get('mysql_server_password'),
+          synchronize: configService.get('mysql_server_synchronize'),
+          logging: configService.get('mysql_server_logging'),
+          poolSize: configService.get('mysql_server_poolSize'),
+          connectorPackage: 'mysql2',
+          extra: {
+            authPlugin: configService.get('mysql_server_extra_authPlugin'),
+          },
+        };
+        // 数据库
+        const database = configService.get('mysql_server_database');
         // 创建没有指定数据库的数据源
         const masterDataSource = new DataSource(dataSourceOptions);
 
@@ -62,9 +63,10 @@ const database = 'mrrs';
         // 返回应用数据源的配置
         return appDataSource.options;
       },
+      inject: [ConfigService],
     }),
   ],
   providers: [MysqlService],
   exports: [MysqlService],
 })
-export class MysqlModule {}
+export class MysqlModule { }

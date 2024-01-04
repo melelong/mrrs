@@ -1,6 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { RedisService } from './redis.service';
 import { createClient } from 'redis';
+import { ConfigService } from '@nestjs/config';
 
 @Global()
 @Module({
@@ -8,21 +9,21 @@ import { createClient } from 'redis';
     RedisService,
     {
       provide: 'REDIS_CLIENT',
-      async useFactory() {
+      async useFactory(configService: ConfigService) {
         const client = createClient({
           socket: {
-            // host: '192.168.3.4',
-            host: '127.0.0.1',
-            port: 6379,
+            host: configService.get('redis_server_host'),
+            port: configService.get('redis_server_port'),
           },
-          password: 'Aa123456',
-          database: 1,
+          password: configService.get('redis_server_password'),
+          database: configService.get('redis_server_db'),
         });
         await client.connect();
         return client;
       },
+      inject: [ConfigService],
     },
   ],
   exports: [RedisService],
 })
-export class RedisModule {}
+export class RedisModule { }
