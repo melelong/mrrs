@@ -1,0 +1,92 @@
+version: '3'
+networks: # 定义网络
+  app_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.3.0/16
+
+services:
+  # service
+  # template_service:
+  #   # 自动重启
+  #   restart: always
+  #   container_name: template_service
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/service/Dockerfile
+  #   depends_on:
+  #     - template_mysql
+  #     - template_redis
+  #   ports:
+  #     - '3001:3001'
+  #   networks:
+  #     app_network:
+  #       ipv4_address: 192.168.3.2
+  template_mysql:
+    # 自动重启
+    restart: always
+    container_name: template_mysql
+    image: bitnami/mysql:latest
+    # 密码认证
+    environment:
+      - MYSQL_ROOT_PASSWORD=Aa123456
+    ports:
+      - '3306:3306'
+      - '33060:33060'
+    volumes:
+      - ./docker-volumes/mysql/data:/var/lib/mysql
+      - ./docker-volumes/mysql/config:/etc/mysql/conf.d
+      - ./docker-volumes/mysql/log:/var/log/mysql
+      - ./docker-volumes/mysql/run:/var/run/mysqld
+    networks:
+      app_network:
+        ipv4_address: 192.168.3.3
+  template_redis:
+    # 自动重启
+    restart: always
+    container_name: template_redis
+    image: bitnami/redis:latest
+    # 密码认证
+    environment:
+      - REDIS_PASSWORD=Aa123456
+    ports:
+      - '6379:6379'
+    volumes:
+      - ./docker-volumes/redis/data:/data
+      - ./docker-volumes/redis/config:/etc/redis
+      - ./docker-volumes/redis/log:/var/log/redis
+      - ./docker-volumes/redis/run:/var/run/redis
+    networks:
+      app_network:
+        ipv4_address: 192.168.3.4
+
+  # # admin
+  # template_admin:
+  #   # 自动重启
+  #   restart: always
+  #   container_name: template_admin
+  #   user: root
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/admin/Dockerfile
+  #   ports:
+  #     - '8081:80'
+  #   networks:
+  #     app_network:
+  #       ipv4_address: 192.168.3.5
+
+  # # docs
+  # template_docs:
+  #   # 自动重启
+  #   restart: always
+  #   container_name: template_docs
+  #   user: root
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/docs/Dockerfile
+  #   ports:
+  #     - '8082:80'
+  #   networks:
+  #     app_network:
+  #       ipv4_address: 192.168.3.6

@@ -1,0 +1,5 @@
+packages:
+  # 前端后端源码
+  - 'apps/*'
+  # 公共库，包含：公共组件(ui)、公共配置(config-eslint、config-typescript等)
+  - 'packages/*'
