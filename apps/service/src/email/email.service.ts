@@ -7,6 +7,7 @@ export class EmailService {
   transporter: Transporter;
 
   constructor(private configService: ConfigService) {
+    // 邮件服务配置
     this.transporter = createTransport({
       host: this.configService.get('nodemailer_host'),
       port: this.configService.get('nodemailer_port'),
@@ -18,6 +19,7 @@ export class EmailService {
     });
   }
 
+  // 发邮件服务
   async sendMail({ to, subject, html }) {
     await this.transporter.sendMail({
       from: {

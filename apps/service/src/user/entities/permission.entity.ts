@@ -5,7 +5,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
+// 权限表结构
 @Entity({
   name: 'permissions',
 })

@@ -4,11 +4,14 @@ import { RedisService } from 'src/redis/redis.service';
 
 @Controller('user')
 export class EmailController {
-  constructor(private readonly emailService: EmailService) {}
+  // 导入邮件模块的服务
+  constructor(private readonly emailService: EmailService) { }
 
+  // 导入reids服务
   @Inject(RedisService)
   private redisService: RedisService;
 
+  // 邮件验证码接口
   @Get('register-captcha')
   async captcha(@Query('address') address: string) {
     const code = Math.random().toString().slice(2, 8);

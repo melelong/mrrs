@@ -12,6 +12,7 @@ import { ConfigService } from '@nestjs/config';
 @Global()
 @Module({
   imports: [
+    // mysql服务的配置
     TypeOrmModule.forRootAsync({
       useFactory: async (configService: ConfigService) => {
         // 公共配置
