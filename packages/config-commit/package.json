@@ -1,0 +1,12 @@
+{
+  "name": "@repo/commit-config",
+  "version": "0.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@commitlint/config-conventional": "^18.4.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,15 @@
+node_modules/**
+
+pnpm-lock.yaml
+
+packages/**
+
+apps/**
+
+commitlint.config.js
+
+.eslintrc.js
+
+.prettierrc.js
+
+*.md
