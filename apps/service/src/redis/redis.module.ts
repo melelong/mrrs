@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 @Module({
   providers: [
     RedisService,
+    // redis服务配置
     {
       provide: 'REDIS_CLIENT',
       async useFactory(configService: ConfigService) {

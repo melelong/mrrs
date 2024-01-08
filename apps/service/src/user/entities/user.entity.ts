@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Role } from './role.entity';
-
+// 用户表结构
 @Entity({
   name: 'users',
 })
@@ -72,7 +72,8 @@ export class User {
 
   @UpdateDateColumn()
   updateTime: Date;
-  // 创建中间表
+
+  // 创建中间表user_roles
   @ManyToMany(() => Role)
   @JoinTable({
     name: 'user_roles',

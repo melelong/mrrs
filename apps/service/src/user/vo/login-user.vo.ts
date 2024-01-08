@@ -1,3 +1,4 @@
+// 后端登录接口返回前端的格式
 interface UserInfo {
   id: number;
 
