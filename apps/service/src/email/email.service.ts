@@ -5,9 +5,9 @@ import { createTransport, Transporter } from 'nodemailer';
 @Injectable()
 export class EmailService {
   transporter: Transporter;
-
+  // 注入配置服务
   constructor(private configService: ConfigService) {
-    // 邮件服务配置
+    // 创建邮件对象
     this.transporter = createTransport({
       host: this.configService.get('nodemailer_host'),
       port: this.configService.get('nodemailer_port'),
@@ -18,8 +18,7 @@ export class EmailService {
       },
     });
   }
-
-  // 发邮件服务
+  // 发邮件
   async sendMail({ to, subject, html }) {
     await this.transporter.sendMail({
       from: {

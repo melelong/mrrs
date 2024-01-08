@@ -3,7 +3,7 @@ import { RedisClientType } from 'redis';
 
 @Injectable()
 export class RedisService {
-  // 导入redis的操作对象
+  // 注入redis的操作对象
   @Inject('REDIS_CLIENT')
   private redisClient: RedisClientType;
 
@@ -19,5 +19,9 @@ export class RedisService {
     if (ttl) {
       await this.redisClient.expire(key, ttl);
     }
+  }
+
+  async delete(key: string) {
+    await this.redisClient.del(key);
   }
 }
