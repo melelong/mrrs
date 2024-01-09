@@ -20,6 +20,8 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { RefreshTokenVo } from './vo/refresh-token.vo';
+import { UserListVo } from './vo/user-list.vo';
 
 @Injectable()
 export class UserService {
@@ -213,11 +215,10 @@ export class UserService {
             this.configService.get('jwt_refresh_token_expres_time') || '7d',
         },
       );
-
-      return {
-        access_token,
-        refresh_token,
-      };
+      const vo = new RefreshTokenVo();
+      vo.access_token = access_token;
+      vo.refresh_token = refresh_token;
+      return vo;
     } catch (e) {
       throw new UnauthorizedException('token 已失效，请重新登录');
     }
@@ -374,11 +375,10 @@ export class UserService {
       take: pageSize,
       where: condition,
     });
-
-    return {
-      users,
-      totalCount,
-    };
+    const vo = new UserListVo();
+    vo.users = users;
+    vo.totalCount = totalCount;
+    return vo;
   }
 
   // 初始化数据服务
