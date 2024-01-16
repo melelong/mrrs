@@ -11,6 +11,8 @@ import {
   useFormRules
 } from '@/hooks/useForm'
 import type { LoginUser } from '@/types'
+import { useTokenStore } from '@/stores'
+import router from '@/router'
 export default defineComponent({
   name: 'LoginPage',
   setup() {
@@ -107,14 +109,20 @@ export default defineComponent({
         )
     }
     // 校验表单成功
+    const tokenState = useTokenStore()
     const handleFinish = async () => {
       try {
         if (isLoading.value) return
         isLoading.value = true
-        const data = await adminApi.user.userLogin(loginFormState)
+        const {
+          data: { refreshToken, accessToken, userInfo }
+        } = await adminApi.user.userLogin(loginFormState)
         isLoading.value = false
         message.success('登录成功')
-        console.log(data)
+        tokenState.setUserInfo(userInfo)
+        tokenState.setAccessToken(accessToken)
+        tokenState.setRefreshToken(refreshToken)
+        router.push('/home')
       } catch (err: any) {
         isLoading.value = false
         message.error(err.data || '系统繁忙，请稍后再试')
