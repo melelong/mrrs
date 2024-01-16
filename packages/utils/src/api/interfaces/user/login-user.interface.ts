@@ -1,4 +1,6 @@
-// 前端调用登录接口的格式
+/**
+ * 登录接口请求参数格式
+ */
 export interface LoginUserDto {
   username: string
   password: string

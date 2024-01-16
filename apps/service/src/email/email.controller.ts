@@ -22,7 +22,11 @@ export class EmailController {
   @Inject(RedisService)
   private redisService: RedisService;
 
-  // 注册功能邮件验证码接口路由
+  /**
+   * 注册功能邮件验证码接口路由
+   * @param query 邮箱验证码接口请求参数格式
+   * @returns
+   */
   @ApiQuery({
     name: 'address',
     type: String,
@@ -49,7 +53,12 @@ export class EmailController {
     });
     return '发送成功';
   }
-  // 修改密码功能邮件验证码接口路由
+
+  /**
+   * 修改密码功能邮件验证码接口路由
+   * @param query 邮箱验证码接口请求参数格式
+   * @returns
+   */
   @ApiQuery({
     name: 'address',
     description: '邮箱地址',
@@ -60,7 +69,6 @@ export class EmailController {
     description: '发送成功',
   })
   @Get('update_password/captcha')
-  @RequireLogin()
   async updatePasswordCaptcha(@Query() query: CaptchaDto) {
     const { address } = query;
     const code = Math.random().toString().slice(2, 8);
@@ -79,7 +87,11 @@ export class EmailController {
     return '发送成功';
   }
 
-  // 修改用户信息功能邮件验证码接口路由
+  /**
+   * 修改用户信息功能邮件验证码接口路由
+   * @param query 邮箱验证码接口请求参数格式
+   * @returns
+   */
   @ApiBearerAuth()
   @ApiQuery({
     name: 'address',
@@ -110,7 +122,13 @@ export class EmailController {
     return '发送成功';
   }
 
-  // 普通用户svg验证码接口路由
+  /**
+   * 普通用户svg验证码接口路由
+   * @param ip 客户端ip
+   * @param origin 客户端origin
+   * @param ua 客户端ua
+   * @returns
+   */
   @Get('res/userCaptcha')
   async userCaptcha(
     @Ip() ip: string,
@@ -127,7 +145,13 @@ export class EmailController {
     );
   }
 
-  // 管理员svg验证码接口路由
+  /**
+   * 管理员svg验证码接口路由
+   * @param ip 客户端ip
+   * @param origin 客户端origin
+   * @param ua 客户端ua
+   * @returns
+   */
   @Get('res/adminCaptcha')
   async adminCaptcha(
     @Ip() ip: string,

@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, MaxLength, MinLength } from 'class-validator';
-// 前端调用登录接口的格式
+/**
+ * 登录接口请求参数格式
+ */
 export class LoginUserDto {
   @IsNotEmpty({
     message: '用户名不能为空',
@@ -11,11 +13,11 @@ export class LoginUserDto {
   @IsNotEmpty({
     message: '密码不能为空',
   })
-  @MinLength(6, {
-    message: '密码不能少于 6 位',
+  @MinLength(8, {
+    message: '密码不能少于 8 位',
   })
   @ApiProperty({
-    minLength: 6,
+    minLength: 8,
   })
   password: string;
 

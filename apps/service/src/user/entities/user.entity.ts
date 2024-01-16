@@ -8,7 +8,9 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Role } from './role.entity';
-// 用户表结构
+/**
+ * 用户表结构
+ */
 @Entity({
   name: 'users',
 })
@@ -19,6 +21,7 @@ export class User {
   @Column({
     length: 50,
     comment: '用户名',
+    unique: true,
   })
   username: string;
 

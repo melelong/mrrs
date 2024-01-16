@@ -1,2 +1,2 @@
-const { commitLint } = require('@repo/commit-config');
-module.exports = commitLint;
+const { commitLint } = require('@repo/commit-config')
+module.exports = commitLint

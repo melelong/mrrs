@@ -5,6 +5,7 @@ import {
   useFormRules,
   type FormRulesConfig
 } from '@/hooks/useForm'
+import router from '@/router'
 import type { RegisterUser } from '@/types'
 import { adminApi } from '@/uitls'
 import { EditName, Mail, User, Lock, LockOne, Key } from '@icon-park/vue-next'
@@ -195,7 +196,7 @@ export default defineComponent({
         const { data } = await adminApi.user.userRegister(registerFormState)
         isLoading.value = false
         message.success(data)
-        console.log(data)
+        router.push('/login')
       } catch (err: any) {
         isLoading.value = false
         message.error(err.data || '系统繁忙，请稍后再试')
@@ -240,7 +241,7 @@ export default defineComponent({
             rules={rules}
           >
             {/* 标题 */}
-            <h1 class="text-[#1976D2] font-bold text-3xl mb-8 mt-4">会议室预订系统 注册</h1>
+            <h1 class="text-[#1976D2] font-bold text-3xl mb-8 mt-4">注册</h1>
 
             {/* 用户名 */}
             <Form.Item name="username">

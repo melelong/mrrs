@@ -1,4 +1,6 @@
-// 前端调用用户注册接口的格式
+/**
+ * 注册接口请求参数格式
+ */
 export interface RegisterUserDto {
   username: string
 

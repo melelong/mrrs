@@ -33,7 +33,11 @@ export class UserController {
   // 注入用户模块的服务
   constructor(private readonly userService: UserService) { }
 
-  // 普通用户注册接口路由
+  /**
+   * 普通用户注册接口路由
+   * @param registerUser 注册接口请求参数格式
+   * @returns
+   */
   @ApiBody({ type: RegisterUserDto })
   @ApiResponse({
     status: HttpStatus.BAD_REQUEST,
@@ -50,7 +54,14 @@ export class UserController {
     return await this.userService.register(registerUser);
   }
 
-  // 普通用户登录接口路由
+  /**
+   * 普通用户登录接口路由
+   * @param loginUser 登录接口请求参数格式
+   * @param ip 客户端ip
+   * @param origin 客户端origin
+   * @param ua 客户端ua
+   * @returns
+   */
   @ApiBody({
     type: LoginUserDto,
   })
@@ -79,7 +90,11 @@ export class UserController {
     return vo;
   }
 
-  // 普通用户刷新长token接口路由
+  /**
+   * 普通用户刷新短token接口路由
+   * @param refreshToken 刷新 token
+   * @returns
+   */
   @ApiQuery({
     name: 'refreshToken',
     type: String,
@@ -102,7 +117,14 @@ export class UserController {
     return newToken;
   }
 
-  // 管理员登录接口路由
+  /**
+   * 管理员登录接口路由
+   * @param loginUser 登录接口请求参数格式
+   * @param ip 客户端ip
+   * @param origin 客户端origin
+   * @param ua 客户端ua
+   * @returns
+   */
   @ApiBody({
     type: LoginUserDto,
   })
@@ -131,7 +153,11 @@ export class UserController {
     return vo;
   }
 
-  // 管理员刷新长token接口路由
+  /**
+   * 管理员刷新短token接口路由
+   * @param refreshToken 刷新 token
+   * @returns
+   */
   @ApiQuery({
     name: 'refreshToken',
     type: String,
@@ -154,7 +180,11 @@ export class UserController {
     return newToken;
   }
 
-  // 获取用户信息接口路由
+  /**
+   * 获取用户信息接口路由
+   * @param userId 用户ID
+   * @returns
+   */
   @ApiBearerAuth()
   @ApiQuery({
     name: 'userId',
@@ -185,8 +215,12 @@ export class UserController {
     return vo;
   }
 
-  // 修改密码接口路由
-  @ApiBearerAuth()
+  /**
+   * 修改密码接口路由
+   * @param userId 用户ID
+   * @param passwordDto 修改密码接口请求参数格式
+   * @returns
+   */
   @ApiBody({
     type: UpdateUserPasswordDto,
   })
@@ -195,15 +229,16 @@ export class UserController {
     description: '验证码已失效/不正确',
   })
   @Post(['update_password', 'admin/update_password'])
-  @RequireLogin()
-  async updatePassword(
-    @UserInfo('userId') userId: number,
-    @Body() passwordDto: UpdateUserPasswordDto,
-  ) {
-    return await this.userService.updatePassword(userId, passwordDto);
+  async updatePassword(@Body() passwordDto: UpdateUserPasswordDto) {
+    return await this.userService.updatePassword(passwordDto);
   }
 
-  // 更新用户信息接口路由
+  /**
+   * 修改用户信息接口路由
+   * @param userId 用户ID
+   * @param updateUserDto 修改用户信息接口请求参数格式
+   * @returns
+   */
   @ApiBearerAuth()
   @ApiBody({
     type: UpdateUserDto,
@@ -226,7 +261,11 @@ export class UserController {
     return await this.userService.update(userId, updateUserDto);
   }
 
-  // 用户冻结接口路由
+  /**
+   * 用户冻结接口路由
+   * @param userId 用户ID
+   * @returns
+   */
   @ApiBearerAuth()
   @Get('freeze')
   @RequireLogin()
@@ -235,7 +274,15 @@ export class UserController {
     return 'success';
   }
 
-  // 获取用户列表
+  /**
+   * 获取用户列表
+   * @param pageNo 第几页
+   * @param pageSize 每页多少条
+   * @param username 用户名
+   * @param nickName 昵称
+   * @param email 邮箱地址
+   * @returns
+   */
   @ApiBearerAuth()
   @ApiQuery({
     name: 'pageNo',
@@ -290,7 +337,10 @@ export class UserController {
     );
   }
 
-  // 初始化数据接口路由
+  /**
+   * 初始化数据接口路由
+   * @returns
+   */
   @Get('init-data')
   async initData() {
     return await this.userService.initData();

@@ -150,7 +150,7 @@ export default defineComponent({
             rules={rules}
           >
             {/* 标题 */}
-            <h1 class="text-[#1976D2] font-bold text-3xl mb-8 mt-4">会议室预订系统 登录</h1>
+            <h1 class="text-[#1976D2] font-bold text-3xl mb-8 mt-4">会议室预订系统</h1>
 
             {/* 用户名 */}
             <Form.Item name="username">

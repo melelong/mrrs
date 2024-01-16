@@ -1,12 +1,6 @@
-/*
- * 2024-01-11 00:50:02
- * @Github: https://github.com/melelong
- * custom_string_obkoro1~custom_string_obkoro100都可以输出自定义信息
- * @Author: melelong
- * Copyright (c) 2024 by ${git_name_email}, All Rights Reserved.
- * @LastEditors: 可以输入预定的版权声明、个性签名、空行等
+/**
+ * 更新用户信息接口请求参数格式
  */
-
 export interface UpdateUserDto {
   headPic?: string
 

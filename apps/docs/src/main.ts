@@ -1,9 +1,9 @@
-import { Header } from '@repo/ui/header';
-import './style.css';
-import typescriptLogo from './typescript.svg';
-import { Counter } from '@repo/ui/counter';
-import { setupCounter } from '@repo/ui/setup-counter';
-import { crypto } from '@repo/utils/es';
+import { Header } from '@repo/ui/header'
+import './style.css'
+import typescriptLogo from './typescript.svg'
+import { Counter } from '@repo/ui/counter'
+import { setupCounter } from '@repo/ui/setup-counter'
+import { crypto } from '@repo/utils/es'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
@@ -19,6 +19,6 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
     </div>
     ${crypto.md5('123')}
   </div>
-`;
+`
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!);
+setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
