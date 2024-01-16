@@ -8,7 +8,9 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Permission } from './permission.entity';
-// 角色表结构
+/**
+ * 角色表结构
+ */
 @Entity({
   name: 'roles',
 })

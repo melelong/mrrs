@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-
+/**
+ * 单个用户的信息响应格式
+ */
 class User {
   @ApiProperty()
   id: number;
@@ -25,7 +27,9 @@ class User {
   @ApiProperty()
   createTime: Date;
 }
-
+/**
+ * 用户列表接口响应格式
+ */
 export class UserListVo {
   @ApiProperty({
     type: [User],

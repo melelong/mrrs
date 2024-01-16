@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-
-// 后端登录接口返回前端的格式
+/**
+ * 登录接口响应格式
+ */
 class UserInfo {
   @ApiProperty()
   id: number;

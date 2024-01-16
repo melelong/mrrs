@@ -13,6 +13,11 @@ const router = createRouter({
   routes: [
     {
       path: '/',
+      name: 'index',
+      redirect: { name: 'login' }
+    },
+    {
+      path: '/home',
       name: 'home',
       component: () => import('../views/HomePage.tsx')
     },

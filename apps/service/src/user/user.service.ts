@@ -61,7 +61,11 @@ export class UserService {
   async setSalt() {
     this.salt = getSalt(await this.configService.get('nest_server').salt);
   }
-  // 注册服务
+  /**
+   * 注册服务
+   * @param user 注册接口请求参数格式
+   * @returns
+   */
   async register(user: RegisterUserDto) {
     await this.setSalt();
     // 从redis中查找邮箱验证码的缓存
@@ -91,6 +95,7 @@ export class UserService {
     newUser.password = await md5(user.password, this.salt);
     newUser.email = user.email;
     newUser.nickName = user.nickName;
+    newUser.isAdmin = false;
 
     try {
       // 保存到用户表中
@@ -103,7 +108,13 @@ export class UserService {
     }
   }
 
-  // 登录服务
+  /**
+   * 登录服务
+   * @param loginUserDto 登录接口请求参数格式
+   * @param isAdmin 是否为管理员
+   * @param hashOptions 生成hash的选项
+   * @returns
+   */
   async login(
     loginUserDto: LoginUserDto,
     isAdmin: boolean,
@@ -191,7 +202,12 @@ export class UserService {
     return vo;
   }
 
-  // 查询单个用户服务
+  /**
+   * 查询单个用户服务
+   * @param userId 用户ID
+   * @param isAdmin 是否为管理员
+   * @returns
+   */
   async findUserById(userId: number, isAdmin: boolean) {
     // 联表查询用户信息
     const user = await this.userRepository.findOne({
@@ -218,7 +234,12 @@ export class UserService {
     };
   }
 
-  // 刷新token
+  /**
+   * 刷新token
+   * @param refreshToken 刷新 Token
+   * @param isAdmin 是否为管理员
+   * @returns
+   */
   async refresh(refreshToken: string, isAdmin: boolean) {
     try {
       // 解析token获取用户数据
@@ -259,7 +280,11 @@ export class UserService {
     }
   }
 
-  // 查找用户信息
+  /**
+   * 查找用户信息
+   * @param userId 用户ID
+   * @returns
+   */
   async findUserDetailById(userId: number) {
     const user = await this.userRepository.findOne({
       where: {
@@ -270,8 +295,13 @@ export class UserService {
     return user;
   }
 
-  // 修改密码
-  async updatePassword(userId: number, passwordDto: UpdateUserPasswordDto) {
+  /**
+   * 修改密码
+   * @param userId 用户ID
+   * @param passwordDto 修改密码接口请求参数格式
+   * @returns
+   */
+  async updatePassword(passwordDto: UpdateUserPasswordDto) {
     // 查找redis中的验证码缓存
     const captcha = await this.redisService.get(
       `update_password_captcha_${passwordDto.email}`,
@@ -286,8 +316,12 @@ export class UserService {
     }
 
     const foundUser = await this.userRepository.findOneBy({
-      id: userId,
+      username: passwordDto.username,
     });
+
+    if (foundUser.email !== passwordDto.email) {
+      throw new HttpException('邮箱不正确', HttpStatus.BAD_REQUEST);
+    }
 
     foundUser.password = await md5(passwordDto.password, this.salt);
 
@@ -303,7 +337,12 @@ export class UserService {
     }
   }
 
-  // 修改信息
+  /**
+   * 修改信息
+   * @param userId 用户ID
+   * @param updateUserDto 修改用户信息接口请求参数格式
+   * @returns
+   */
   async update(userId: number, updateUserDto: UpdateUserDto) {
     const captcha = await this.redisService.get(
       `update_user_captcha_${updateUserDto.email}`,
@@ -340,7 +379,10 @@ export class UserService {
     }
   }
 
-  // 冻结用户
+  /**
+   * 冻结用户
+   * @param id 用户ID
+   */
   async freezeUserById(id: number) {
     const user = await this.userRepository.findOneBy({
       id,
@@ -348,7 +390,13 @@ export class UserService {
     user.isFrozen = true;
     await this.userRepository.save(user);
   }
-  // 分页查询
+
+  /**
+   * 分页查询
+   * @param pageNo 第几页
+   * @param pageSize 每页多少条
+   * @returns
+   */
   async findUsersByPage(pageNo: number, pageSize: number) {
     const skipCount = (pageNo - 1) * pageSize;
 
@@ -373,7 +421,15 @@ export class UserService {
     };
   }
 
-  // 查询用户
+  /**
+   * 查询用户
+   * @param username 用户名
+   * @param nickName 昵称
+   * @param email 邮箱地址
+   * @param pageNo 第几页
+   * @param pageSize 每页多少条
+   * @returns
+   */
   async findUsers(
     username: string,
     nickName: string,
@@ -416,29 +472,26 @@ export class UserService {
     return vo;
   }
 
-  // 初始化数据服务
+  /**
+   * 初始化数据服务
+   * @returns
+   */
   async initData() {
     try {
       await this.setSalt();
       const user1 = new User();
-      user1.username = 'zhangsan';
-      user1.password = await md5('Aa123456', this.salt);
-      user1.email = 'xxx@xx.com';
+      user1.username = 'melelong';
+      user1.password = await md5('11111111', this.salt);
+      user1.email = '1137042726@qq.com';
       user1.isAdmin = true;
-      user1.nickName = '张三';
-      user1.phoneNumber = '13233323333';
-
-      const user2 = new User();
-      user2.username = 'lisi';
-      user2.password = await md5('Aa123456', this.salt);
-      user2.email = 'yy@yy.com';
-      user2.nickName = '李四';
+      user1.nickName = 'melelong';
+      user1.phoneNumber = '15219764231';
 
       const role1 = new Role();
-      role1.name = '管理员';
+      role1.name = 'admin';
 
       const role2 = new Role();
-      role2.name = '普通用户';
+      role2.name = 'user';
 
       const permission1 = new Permission();
       permission1.code = 'ccc';
@@ -449,14 +502,13 @@ export class UserService {
       permission2.description = '访问 ddd 接口';
 
       user1.roles = [role1];
-      user2.roles = [role2];
 
       role1.permissions = [permission1, permission2];
       role2.permissions = [permission1];
 
       await this.permissionRepository.save([permission1, permission2]);
       await this.roleRepository.save([role1, role2]);
-      await this.userRepository.save([user1, user2]);
+      await this.userRepository.save([user1]);
 
       return {
         code: 200,

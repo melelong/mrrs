@@ -4,7 +4,7 @@ module.exports = {
   // 设置开发环境
   env: {
     browser: true, // 设置浏览器环境，如果您的代码是在浏览器中运行的
-    node: true, // 设置Node环境，如果您的代码是在Node.js中运行的
+    node: true // 设置Node环境，如果您的代码是在Node.js中运行的
     // 其他可能的环境设置...
   },
   // 默认情况下，Eslint使用其内置的 Espree 解析器，该解析器与标准 JavaScript 运行时和版本兼容，而我们需要将ts代码解析为eslint兼容的AST，所以此处我们使用 @typescript-eslint/parser
@@ -19,7 +19,7 @@ module.exports = {
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/eslint-recommended',
-    'plugin:prettier/recommended',
+    'plugin:prettier/recommended'
     // 'prettier',
   ],
   // 该配置项指示要加载的插件，这里
@@ -36,6 +36,6 @@ module.exports = {
     'prefer-arrow-callback': 'off',
     // 禁止使用 TypeScript 中的 any 类型。any 类型基本上是一个“逃逸口”——它允许你绕过类型检查，这与 TypeScript 强类型的理念相违背，默认是禁止使用any
     '@typescript-eslint/no-explicit-any': 'off',
-    'linebreak-style': ['error', 'unix'],
-  },
-};
+    'linebreak-style': ['error', 'unix']
+  }
+}

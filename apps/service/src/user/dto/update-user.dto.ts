@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, IsNotEmpty } from 'class-validator';
-
+/**
+ * 修改用户信息接口请求参数格式
+ */
 export class UpdateUserDto {
   @ApiProperty()
   headPic: string;

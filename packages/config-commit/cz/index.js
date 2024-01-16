@@ -1,6 +1,6 @@
-const types = require('./types');
-const scopes = require('./scopes');
-const messages = require('./messages');
+const types = require('./types')
+const scopes = require('./scopes')
+const messages = require('./messages')
 module.exports = {
   allowBreakingChanges: ['feat', 'fix'],
   allowCustomScopes: true,
@@ -13,5 +13,5 @@ module.exports = {
   // 跳过问题
   // skipQuestions: ['body', 'footer'],
   // subject文字长度默认是72
-  subjectLimit: 72,
-};
+  subjectLimit: 72
+}

@@ -1,5 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-
+/**
+ * 用户信息接口响应格式
+ */
 export class UserDetailVo {
   @ApiProperty()
   id: number;
