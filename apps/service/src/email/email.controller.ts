@@ -1,8 +1,17 @@
-import { Controller, Get, HttpStatus, Inject, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpStatus,
+  Inject,
+  Ip,
+  Query,
+  Headers,
+} from '@nestjs/common';
 import { EmailService } from './email.service';
 import { RedisService } from 'src/redis/redis.service';
 import { ApiBearerAuth, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RequireLogin } from 'src/decorators/custom.decorator';
+import { CaptchaDto } from './dto/captcha.dto';
 @ApiTags('邮件验证码模块')
 @Controller('user')
 export class EmailController {
@@ -27,7 +36,8 @@ export class EmailController {
     type: String,
   })
   @Get('register-captcha')
-  async captcha(@Query('address') address: string) {
+  async captcha(@Query() query: CaptchaDto) {
+    const { address } = query;
     const code = Math.random().toString().slice(2, 8);
 
     await this.redisService.set(`captcha_${address}`, code, 5 * 60);
@@ -40,7 +50,6 @@ export class EmailController {
     return '发送成功';
   }
   // 修改密码功能邮件验证码接口路由
-  @ApiBearerAuth()
   @ApiQuery({
     name: 'address',
     description: '邮箱地址',
@@ -52,7 +61,8 @@ export class EmailController {
   })
   @Get('update_password/captcha')
   @RequireLogin()
-  async updatePasswordCaptcha(@Query('address') address: string) {
+  async updatePasswordCaptcha(@Query() query: CaptchaDto) {
+    const { address } = query;
     const code = Math.random().toString().slice(2, 8);
 
     await this.redisService.set(
@@ -82,7 +92,8 @@ export class EmailController {
   })
   @Get('update/captcha')
   @RequireLogin()
-  async updateUserCaptcha(@Query('address') address: string) {
+  async updateUserCaptcha(@Query() query: CaptchaDto) {
+    const { address } = query;
     const code = Math.random().toString().slice(2, 8);
 
     await this.redisService.set(
@@ -97,5 +108,39 @@ export class EmailController {
       html: `<p>你的更改用户信息验证码是 ${code}</p>`,
     });
     return '发送成功';
+  }
+
+  // 普通用户svg验证码接口路由
+  @Get('res/userCaptcha')
+  async userCaptcha(
+    @Ip() ip: string,
+    @Headers('Origin') origin: string,
+    @Headers('User-Agent') ua: string,
+  ) {
+    return await this.emailService.captcha(
+      {
+        ip,
+        origin,
+        ua,
+      },
+      false,
+    );
+  }
+
+  // 管理员svg验证码接口路由
+  @Get('res/adminCaptcha')
+  async adminCaptcha(
+    @Ip() ip: string,
+    @Headers('Origin') origin: string,
+    @Headers('User-Agent') ua: string,
+  ) {
+    return await this.emailService.captcha(
+      {
+        ip,
+        origin,
+        ua,
+      },
+      true,
+    );
   }
 }

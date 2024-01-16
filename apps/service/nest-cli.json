@@ -9,7 +9,11 @@
     "deleteOutDir": true,
     "watchAssets": true,
     "assets": [
-      "**/*.env"
+      {
+        "include": "**/*.yaml",
+        "watchAssets": true,
+        "outDir": "dist/src/.config"
+      }
     ]
   }
 }

@@ -15,23 +15,35 @@ import { ConfigService } from '@nestjs/config';
     // mysql服务的配置
     TypeOrmModule.forRootAsync({
       useFactory: async (configService: ConfigService) => {
+        // 获取配置
+        const {
+          type,
+          host,
+          port,
+          username,
+          password,
+          synchronize,
+          logging,
+          poolSize,
+          connectorPackage,
+          extra_authPlugin,
+          database,
+        } = configService.get('mysql_server');
         // 公共配置
         const dataSourceOptions: MysqlConnectionOptions = {
-          type: 'mysql',
-          host: configService.get('mysql_server_host'),
-          port: configService.get('mysql_server_port'),
-          username: configService.get('mysql_server_username'),
-          password: configService.get('mysql_server_password'),
-          synchronize: configService.get('mysql_server_synchronize'),
-          logging: configService.get('mysql_server_logging'),
-          poolSize: configService.get('mysql_server_poolSize'),
-          connectorPackage: 'mysql2',
+          type,
+          host,
+          port,
+          username,
+          password,
+          synchronize,
+          logging,
+          poolSize,
+          connectorPackage,
           extra: {
-            authPlugin: configService.get('mysql_server_extra_authPlugin'),
+            authPlugin: extra_authPlugin,
           },
         };
-        // 数据库
-        const database = configService.get('mysql_server_database');
         // 创建没有指定数据库的数据源
         const masterDataSource = new DataSource(dataSourceOptions);
 

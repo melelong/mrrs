@@ -13,8 +13,8 @@ export const RequirePermission = (...permissions: string[]) =>
 // 获取用户信息
 export const UserInfo = createParamDecorator(
   (data: string, ctx: ExecutionContext) => {
+    // 上下文获取请求
     const request: any = ctx.switchToHttp().getRequest<Request>();
-
     if (!request.user) {
       return null;
     }

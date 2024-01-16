@@ -52,13 +52,13 @@ COPY turbo.json turbo.json
 # 使用 Turbo 工具构建项目
 RUN pnpm turbo build --filter=service...
 
-
 # 第四阶段，创建 nestjs 用户和组，并切换到 nestjs 用户。然后将安装器镜像中的代码复制到运行时镜像中，并设置容器启动命令为运行 `node apps/service/dist/main.js`
 FROM base AS runner
 
 # 设置工作目录
 WORKDIR /app
-
+# 全局安装 pnpm
+RUN npm i -g pnpm
 # 创建 nestjs 用户和组
 RUN addgroup --system --gid 1001 nestjs
 RUN adduser --system --uid 1001 nestjs
@@ -69,5 +69,8 @@ USER nestjs
 # 复制安装器镜像中的代码到运行时镜像中
 COPY --from=installer /app .
 
+# 设置工作目录
+WORKDIR /app/apps/service
 # 设置容器启动命令
-CMD node apps/service/dist/main.js
+# CMD node apps/service/dist/main.js
+CMD pnpm start:prod
