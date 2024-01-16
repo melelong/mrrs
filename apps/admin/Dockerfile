@@ -72,10 +72,10 @@ FROM nginx AS runner
 # 设置工作目录为 /usr/share/nginx/html
 WORKDIR /usr/share/nginx/html
 
-# 创建系统用户组 web，并指定组ID为1001
+# 创建系统用户组 admin，并指定组ID为1001
 RUN addgroup --system --gid 1001 admin
 
-# 创建系统用户 web，并指定用户ID为1001
+# 创建系统用户 admin，并指定用户ID为1001
 RUN adduser --system --uid 1001 admin
 
 # 切换用户为 admin 用户

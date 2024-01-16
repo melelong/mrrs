@@ -7,7 +7,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { md5 } from 'src/utils';
+import { getSalt, md5 } from 'src/utils';
 import { Like, Repository } from 'typeorm';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { User } from './entities/user.entity';
@@ -22,7 +22,11 @@ import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RefreshTokenVo } from './vo/refresh-token.vo';
 import { UserListVo } from './vo/user-list.vo';
-
+interface HashOptions {
+  ip: string;
+  origin: string;
+  ua: string;
+}
 @Injectable()
 export class UserService {
   // 注入用户表的操作对象
@@ -51,8 +55,15 @@ export class UserService {
   @Inject(ConfigService)
   private configService: ConfigService;
 
+  // 盐
+  private salt: CryptoJS.lib.WordArray;
+
+  async setSalt() {
+    this.salt = getSalt(await this.configService.get('nest_server').salt);
+  }
   // 注册服务
   async register(user: RegisterUserDto) {
+    await this.setSalt();
     // 从redis中查找邮箱验证码的缓存
     const captcha = await this.redisService.get(`captcha_${user.email}`);
     console.log(captcha);
@@ -77,7 +88,7 @@ export class UserService {
     // 实例化用户对象
     const newUser = new User();
     newUser.username = user.username;
-    newUser.password = md5(user.password);
+    newUser.password = await md5(user.password, this.salt);
     newUser.email = user.email;
     newUser.nickName = user.nickName;
 
@@ -93,7 +104,15 @@ export class UserService {
   }
 
   // 登录服务
-  async login(loginUserDto: LoginUserDto, isAdmin: boolean) {
+  async login(
+    loginUserDto: LoginUserDto,
+    isAdmin: boolean,
+    hashOptions: HashOptions,
+  ) {
+    await this.setSalt();
+    const typeName = `${isAdmin ? 'admin' : 'user'}`;
+    const { ip, origin, ua } = hashOptions;
+    const hash = await md5(`${ip}_${origin}_${ua}_${typeName}`, this.salt);
     // 联表查询用户信息
     const user = await this.userRepository.findOne({
       where: {
@@ -103,14 +122,26 @@ export class UserService {
       // 角色表和角色权限表
       relations: ['roles', 'roles.permissions'],
     });
-
+    // 对比用户
     if (!user) {
       throw new HttpException('用户不存在', HttpStatus.BAD_REQUEST);
     }
-
-    if (user.password !== md5(loginUserDto.password)) {
+    // 对比密码
+    if (user.password !== (await md5(loginUserDto.password, this.salt))) {
       throw new HttpException('密码错误', HttpStatus.BAD_REQUEST);
     }
+    try {
+      // 对比验证码,统一转成小写，不区分大小写
+      const captchaName = `${typeName}_login_${hash.substring(0, 8)}`;
+      const captcha: string = await this.redisService.get(captchaName);
+      if (captcha.toLowerCase() !== loginUserDto.captcha.toLowerCase()) {
+        throw new HttpException('验证码错误', HttpStatus.BAD_REQUEST);
+      }
+      this.redisService.delete(captchaName);
+    } catch (e) {
+      throw new HttpException('验证码过期', HttpStatus.BAD_REQUEST);
+    }
+
     const vo = new LoginUserVo();
     vo.userInfo = {
       id: user.id,
@@ -142,7 +173,8 @@ export class UserService {
       },
       {
         expiresIn:
-          this.configService.get('jwt_access_token_expires_time') || '30m',
+          this.configService.get('jwt_server').access_token_expires_time ||
+          '30m',
       },
     );
     // 生成长token
@@ -152,7 +184,8 @@ export class UserService {
       },
       {
         expiresIn:
-          this.configService.get('jwt_refresh_token_expres_time') || '7d',
+          this.configService.get('jwt_server').refresh_token_expres_time ||
+          '7d',
       },
     );
     return vo;
@@ -202,7 +235,8 @@ export class UserService {
         },
         {
           expiresIn:
-            this.configService.get('jwt_access_token_expires_time') || '30m',
+            this.configService.get('jwt_server').access_token_expires_time ||
+            '30m',
         },
       );
       // 重新生成长token
@@ -212,7 +246,8 @@ export class UserService {
         },
         {
           expiresIn:
-            this.configService.get('jwt_refresh_token_expres_time') || '7d',
+            this.configService.get('jwt_server').refresh_token_expres_time ||
+            '7d',
         },
       );
       const vo = new RefreshTokenVo();
@@ -254,7 +289,7 @@ export class UserService {
       id: userId,
     });
 
-    foundUser.password = md5(passwordDto.password);
+    foundUser.password = await md5(passwordDto.password, this.salt);
 
     try {
       await this.userRepository.save(foundUser);
@@ -384,9 +419,10 @@ export class UserService {
   // 初始化数据服务
   async initData() {
     try {
+      await this.setSalt();
       const user1 = new User();
       user1.username = 'zhangsan';
-      user1.password = md5('111111');
+      user1.password = await md5('Aa123456', this.salt);
       user1.email = 'xxx@xx.com';
       user1.isAdmin = true;
       user1.nickName = '张三';
@@ -394,7 +430,7 @@ export class UserService {
 
       const user2 = new User();
       user2.username = 'lisi';
-      user2.password = md5('222222');
+      user2.password = await md5('Aa123456', this.salt);
       user2.email = 'yy@yy.com';
       user2.nickName = '李四';
 

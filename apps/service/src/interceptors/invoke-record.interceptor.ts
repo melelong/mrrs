@@ -8,6 +8,7 @@ import {
 import { Response } from 'express';
 import { Request } from 'express';
 import { Observable, tap } from 'rxjs';
+import { isRes } from 'src/utils';
 
 @Injectable()
 export class InvokeRecordInterceptor implements NestInterceptor {
@@ -24,7 +25,7 @@ export class InvokeRecordInterceptor implements NestInterceptor {
     // 取出请求头里的user-agent
     const userAgent = request.headers['user-agent'];
     // 取出请求对象里的ip、请求方法、路径
-    const { ip, method, path } = request;
+    const { ip, method, path, url } = request;
     // 日志打印出信息
     this.logger.debug(
       `${method} ${path} ${ip} ${userAgent}: ${context.getClass().name} ${context.getHandler().name
@@ -39,12 +40,14 @@ export class InvokeRecordInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       tap((res) => {
+        // 是获取资源接口就不打印
+        if (isRes(url)) return;
         // 打印响应时间
         this.logger.debug(
           `${method} ${path} ${ip} ${userAgent}: ${response.statusCode}: ${Date.now() - now
           }ms`,
         );
-        this.logger.debug(`Response: ${JSON.stringify(res)}`);
+        this.logger.debug(`响应体: ${JSON.stringify(res)}`);
       }),
     );
   }

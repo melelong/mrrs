@@ -4,8 +4,10 @@ import {
   DefaultValuePipe,
   Get,
   HttpStatus,
+  Ip,
   Post,
   Query,
+  Headers,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -63,8 +65,17 @@ export class UserController {
     type: LoginUserVo,
   })
   @Post('login')
-  async userLogin(@Body() loginUser: LoginUserDto) {
-    const vo = await this.userService.login(loginUser, false);
+  async userLogin(
+    @Body() loginUser: LoginUserDto,
+    @Ip() ip: string,
+    @Headers('Origin') origin: string,
+    @Headers('User-Agent') ua: string,
+  ) {
+    const vo = await this.userService.login(loginUser, false, {
+      ip,
+      origin,
+      ua,
+    });
     return vo;
   }
 
@@ -106,8 +117,17 @@ export class UserController {
     type: LoginUserVo,
   })
   @Post('admin/login')
-  async adminLogin(@Body() loginUser: LoginUserDto) {
-    const vo = await this.userService.login(loginUser, true);
+  async adminLogin(
+    @Body() loginUser: LoginUserDto,
+    @Ip() ip: string,
+    @Headers('Origin') origin: string,
+    @Headers('User-Agent') ua: string,
+  ) {
+    const vo = await this.userService.login(loginUser, true, {
+      ip,
+      origin,
+      ua,
+    });
     return vo;
   }
 
@@ -230,17 +250,17 @@ export class UserController {
   @ApiQuery({
     name: 'username',
     description: '用户名',
-    type: Number,
+    type: String,
   })
   @ApiQuery({
     name: 'nickName',
     description: '昵称',
-    type: Number,
+    type: String,
   })
   @ApiQuery({
     name: 'email',
     description: '邮箱地址',
-    type: Number,
+    type: String,
   })
   @ApiResponse({
     type: UserListVo,

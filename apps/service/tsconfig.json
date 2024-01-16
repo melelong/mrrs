@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "module": "CommonJS",
+    "lib": ["ESNext"],
     "declaration": true,
     "removeComments": true,
     "emitDecoratorMetadata": true,

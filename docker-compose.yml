@@ -8,21 +8,22 @@ networks: # 定义网络
 
 services:
   # service
-  # template_service:
-  #   # 自动重启
-  #   restart: always
-  #   container_name: template_service
-  #   build:
-  #     context: .
-  #     dockerfile: ./apps/service/Dockerfile
-  #   depends_on:
-  #     - template_mysql
-  #     - template_redis
-  #   ports:
-  #     - '3001:3001'
-  #   networks:
-  #     app_network:
-  #       ipv4_address: 192.168.3.2
+  template_service:
+    # 自动重启
+    restart: always
+    container_name: template_service
+    build:
+      context: .
+      dockerfile: ./apps/service/Dockerfile
+    depends_on:
+      - template_mysql
+      - template_redis
+    ports:
+      - '3001:3001'
+    networks:
+      app_network:
+        ipv4_address: 192.168.3.2
+
   template_mysql:
     # 自动重启
     restart: always
@@ -42,6 +43,7 @@ services:
     networks:
       app_network:
         ipv4_address: 192.168.3.3
+
   template_redis:
     # 自动重启
     restart: always
@@ -72,6 +74,10 @@ services:
   #     dockerfile: ./apps/admin/Dockerfile
   #   ports:
   #     - '8081:80'
+  #   volumes:
+  #     - ./docker-volumes/admin/config:/etc/nginx
+  #     - ./docker-volumes/admin/log:/var/log/nginx
+  #     - ./docker-volumes/admin/html:/usr/share/nginx/html
   #   networks:
   #     app_network:
   #       ipv4_address: 192.168.3.5

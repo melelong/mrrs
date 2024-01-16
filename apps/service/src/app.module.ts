@@ -1,15 +1,17 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { RedisModule } from './redis/redis.module';
 import { MysqlModule } from './mysql/mysql.module';
 import { EmailModule } from './email/email.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { APP_GUARD } from '@nestjs/core';
 import { LoginGuard } from './guards/login.guard';
 import { PermissionGuard } from './guards/permission.guard';
+import { CorsGuard } from './guards/cors.guard';
+import { getConfig } from './utils';
 
 @Module({
   imports: [
@@ -17,10 +19,12 @@ import { PermissionGuard } from './guards/permission.guard';
     JwtModule.registerAsync({
       global: true,
       useFactory(configService: ConfigService) {
+        const { secret, signOptions_expiresIn } =
+          configService.get('jwt_server');
         return {
-          secret: configService.get('jwt_server_secret'),
+          secret,
           signOptions: {
-            expiresIn: configService.get('jwt_server_signOptions_expiresIn'),
+            expiresIn: signOptions_expiresIn,
           },
         };
       },
@@ -31,7 +35,9 @@ import { PermissionGuard } from './guards/permission.guard';
     // 导入配置模块
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: 'src/.env',
+      // envFilePath: './src/config.env',
+      ignoreEnvFile: true,
+      load: [getConfig],
     }),
     // 导入reids模块
     RedisModule,
@@ -46,6 +52,11 @@ import { PermissionGuard } from './guards/permission.guard';
   providers: [
     // 导入根模块服务
     AppService,
+    {
+      // cors守卫
+      provide: APP_GUARD,
+      useClass: CorsGuard,
+    },
     {
       // 登录守卫
       provide: APP_GUARD,
