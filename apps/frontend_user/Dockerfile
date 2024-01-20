@@ -26,7 +26,7 @@ RUN npm install turbo --global
 COPY . .
 
 # 使用 turbo 删除不需要的文件和依赖，加速构建过程
-RUN turbo prune docs --docker
+RUN turbo prune frontend_user --docker
 
 
 # 使用前面定义的 base 镜像作为安装阶段的基础镜像
@@ -63,7 +63,7 @@ COPY --from=builder /app/out/full/ .
 COPY turbo.json turbo.json
 
 # 使用 pnpm 和 turbo 进行构建，根据过滤条件构建项目
-RUN pnpm turbo build --filter=docs...
+RUN pnpm turbo build --filter=frontend_user...
 
 
 # 使用前面定义的 nginx 镜像作为运行阶段的基础镜像
@@ -72,16 +72,16 @@ FROM nginx AS runner
 # 设置工作目录为 /usr/share/nginx/html
 WORKDIR /usr/share/nginx/html
 
-# 创建系统用户组 docs，并指定组ID为1001
-RUN addgroup --system --gid 1001 docs
+# 创建系统用户组 frontend_user，并指定组ID为1001
+RUN addgroup --system --gid 1001 frontend_user
 
-# 创建系统用户 docs，并指定用户ID为1001
-RUN adduser --system --uid 1001 docs
+# 创建系统用户 frontend_user，并指定用户ID为1001
+RUN adduser --system --uid 1001 frontend_user
 
-# 切换用户为 docs 用户
-USER docs
+# 切换用户为 frontend_user 用户
+USER frontend_user
 
-# 从安装阶段的容器中复制 /app/apps/docs/dist 目录到当前容器的工作目录
-COPY --from=installer /app/apps/docs/dist .
+# 从安装阶段的容器中复制 /app/apps/frontend_user/dist 目录到当前容器的工作目录
+COPY --from=installer /app/apps/frontend_user/dist .
 
 # 注意：以上代码块中的注释仅供参考，并非实际执行的命令或操作

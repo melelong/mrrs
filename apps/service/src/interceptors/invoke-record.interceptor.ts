@@ -17,7 +17,9 @@ import { Response } from 'express';
 import { Request } from 'express';
 import { Observable, tap } from 'rxjs';
 import { isRes } from 'src/utils';
-
+/**
+ * 全局响应的记录日志
+ */
 @Injectable()
 export class InvokeRecordInterceptor implements NestInterceptor {
   private readonly logger = new Logger(InvokeRecordInterceptor.name);

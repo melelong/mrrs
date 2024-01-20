@@ -22,16 +22,9 @@ export default defineConfig(({ mode }) => {
       vueJsx()
     ],
     server: {
-      port: 8082,
+      port: 8081,
       strictPort: false,
       host: true
-      // proxy: {
-      //   '/api': {
-      //     target: 'http://127.0.0.1:3001/api',
-      //     changeOrigin: true,
-      //     rewrite: (path) => path.replace(/^\/api/, ''),
-      //   }
-      // },
     },
     resolve: {
       alias: {

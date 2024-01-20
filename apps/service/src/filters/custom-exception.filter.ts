@@ -5,7 +5,9 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { Response } from 'express';
-
+/**
+ * 前端传来的数据格式的全局异常处理
+ */
 @Catch(HttpException)
 export class CustomExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {

@@ -21,7 +21,7 @@ import { PermissionGuard } from './guards/permission.guard';
 import { CorsGuard } from './guards/cors.guard';
 import { getConfig } from './utils';
 import { CheckModule } from './check/check.module';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerGuard, ThrottlerModule, seconds } from '@nestjs/throttler';
 import { ThrottlerStorageRedisService } from 'nestjs-throttler-storage-redis';
 interface RedisOptions {
   host: string;
@@ -62,17 +62,17 @@ interface RedisOptions {
           throttlers: [
             {
               name: short.name,
-              ttl: short.ttl,
+              ttl: seconds(short.ttl),
               limit: short.limit,
             },
             {
               name: medium.name,
-              ttl: medium.ttl,
+              ttl: seconds(medium.ttl),
               limit: medium.limit,
             },
             {
               name: long.name,
-              ttl: long.ttl,
+              ttl: seconds(long.ttl),
               limit: long.limit,
             },
           ],

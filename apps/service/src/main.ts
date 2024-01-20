@@ -71,6 +71,7 @@ async function bootstrap() {
   app.useGlobalFilters(new UnloginFilter());
   // 前端传来的数据格式的全局异常处理
   app.useGlobalFilters(new CustomExceptionFilter());
+  // 过滤出限流响应，自定义限流响应
   app.useGlobalFilters(new CustomThrottlerExceptionFilter());
   // 设置接口都以api开头
   app.setGlobalPrefix(path);
