@@ -1,4 +1,4 @@
-import { useTokenStore } from '@/stores'
+import { useTokenStore } from '@/stores/useTokenStore'
 import { defineComponent, onMounted } from 'vue'
 export default defineComponent({
   name: 'HomePage',

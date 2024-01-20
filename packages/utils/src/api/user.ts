@@ -49,7 +49,24 @@ export class UserApi {
    * @returns
    */
   async userLoginCaptcha() {
-    return await this.request.get('api/user/res/userCaptcha')
+    return await this.request.get('/api/user/res/userCaptcha')
+  }
+
+  /**
+   * 管理员登录
+   * @param data 登录接口请求参数格式
+   * @returns
+   */
+  async adminLogin(data: LoginUserDto) {
+    return await this.request.post('/api/user/admin/login', data)
+  }
+
+  /**
+   * 管理员登录验证码
+   * @returns
+   */
+  async adminLoginCaptcha() {
+    return await this.request.get('/api/user/res/adminCaptcha')
   }
 
   /**

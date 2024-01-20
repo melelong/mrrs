@@ -10,7 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { Permission } from '../user/entities/permission.entity';
-import { UnLoginException } from 'src/user/filters/unlogin.filter';
+import { UnLoginException } from 'src/filters/unlogin.filter';
 // 定义jwt用户数据接口类型
 interface JwtUserData {
   userId: number;

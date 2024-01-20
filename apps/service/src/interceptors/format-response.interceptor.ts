@@ -12,7 +12,6 @@ export class FormatResponseInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     // 从上下文中获取响应
     const response = context.switchToHttp().getResponse<Response>();
-
     return next.handle().pipe(
       map((data) => {
         return {

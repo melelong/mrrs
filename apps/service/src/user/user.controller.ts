@@ -200,7 +200,7 @@ export class UserController {
   })
   @Get('info')
   @RequireLogin()
-  async info(@UserInfo('userId') userId: number) {
+  async info(@UserInfo('userId') userId: string) {
     const user = await this.userService.findUserDetailById(userId);
     const vo = new UserDetailVo();
     vo.id = user.id;
@@ -255,7 +255,7 @@ export class UserController {
   @Post(['update', 'admin/update'])
   @RequireLogin()
   async update(
-    @UserInfo('userId') userId: number,
+    @UserInfo('userId') userId: string,
     @Body() updateUserDto: UpdateUserDto,
   ) {
     return await this.userService.update(userId, updateUserDto);
@@ -269,7 +269,7 @@ export class UserController {
   @ApiBearerAuth()
   @Get('freeze')
   @RequireLogin()
-  async freeze(@Query('id') userId: number) {
+  async freeze(@Query('id') userId: string) {
     await this.userService.freezeUserById(userId);
     return 'success';
   }
