@@ -125,4 +125,4 @@ interface RedisOptions {
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }

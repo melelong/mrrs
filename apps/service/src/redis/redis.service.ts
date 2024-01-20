@@ -12,6 +12,11 @@ export class RedisService {
   @Inject('REDIS_CLIENT')
   private redisClient: RedisClientType;
 
+  /**
+   * 获取redis连接库的配置
+   * @param options redis连接库的配置
+   * @returns
+   */
   static getRedisOptions(options: RedisOptions) {
     const { host, port, password, database } = options;
     return {

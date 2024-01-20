@@ -4,11 +4,12 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common/pipes';
 import { FormatResponseInterceptor } from './interceptors/format-response.interceptor';
 import { InvokeRecordInterceptor } from './interceptors/invoke-record.interceptor';
-import { UnloginFilter } from './user/filters/unlogin.filter';
-import { CustomExceptionFilter } from './user/filters/custom-exception.filter';
+import { UnloginFilter } from './filters/unlogin.filter';
+import { CustomExceptionFilter } from './filters/custom-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { getWhiteList } from './utils';
 import helmet from 'helmet';
+import { CustomThrottlerExceptionFilter } from './filters/custom-throttler-exception.filter';
 async function bootstrap() {
   // 根据根模块创建服务
   const app = await NestFactory.create(AppModule);
@@ -70,6 +71,7 @@ async function bootstrap() {
   app.useGlobalFilters(new UnloginFilter());
   // 前端传来的数据格式的全局异常处理
   app.useGlobalFilters(new CustomExceptionFilter());
+  app.useGlobalFilters(new CustomThrottlerExceptionFilter());
   // 设置接口都以api开头
   app.setGlobalPrefix(path);
   // swagger接口文档(和服务端口监听放在最后面)

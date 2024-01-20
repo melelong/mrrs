@@ -140,8 +140,12 @@ export default defineComponent({
     // 获取验证码
     const imgSrcRef = ref<string>('')
     const getUserLoginCaptcha = async () => {
-      const { data } = await adminApi.user.userLoginCaptcha()
-      imgSrcRef.value = svgToBase64(data)
+      try {
+        const { data } = await adminApi.user.userLoginCaptcha()
+        imgSrcRef.value = svgToBase64(data)
+      } catch (err: any) {
+        message.error(err.data)
+      }
     }
     onMounted(async () => {
       await getUserLoginCaptcha()
