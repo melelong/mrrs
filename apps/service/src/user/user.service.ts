@@ -70,7 +70,6 @@ export class UserService {
     await this.setSalt();
     // 从redis中查找邮箱验证码的缓存
     const captcha = await this.redisService.get(`captcha_${user.email}`);
-    console.log(captcha);
     if (!captcha) {
       // 没找到
       throw new HttpException('验证码已失效', HttpStatus.BAD_REQUEST);
@@ -100,7 +99,7 @@ export class UserService {
     try {
       // 保存到用户表中
       await this.userRepository.save(newUser);
-      await this.redisService.delete(`captcha_${user.email}`);
+      await this.redisService.del(`captcha_${user.email}`);
       return '注册成功';
     } catch (e) {
       this.logger.error(e, UserService);
@@ -148,7 +147,7 @@ export class UserService {
       if (captcha.toLowerCase() !== loginUserDto.captcha.toLowerCase()) {
         throw new HttpException('验证码错误', HttpStatus.BAD_REQUEST);
       }
-      this.redisService.delete(captchaName);
+      this.redisService.del(captchaName);
     } catch (e) {
       throw new HttpException('验证码过期', HttpStatus.BAD_REQUEST);
     }
@@ -208,7 +207,7 @@ export class UserService {
    * @param isAdmin 是否为管理员
    * @returns
    */
-  async findUserById(userId: number, isAdmin: boolean) {
+  async findUserById(userId: string, isAdmin: boolean) {
     // 联表查询用户信息
     const user = await this.userRepository.findOne({
       where: {
@@ -285,7 +284,7 @@ export class UserService {
    * @param userId 用户ID
    * @returns
    */
-  async findUserDetailById(userId: number) {
+  async findUserDetailById(userId: string) {
     const user = await this.userRepository.findOne({
       where: {
         id: userId,
@@ -302,6 +301,7 @@ export class UserService {
    * @returns
    */
   async updatePassword(passwordDto: UpdateUserPasswordDto) {
+    await this.setSalt();
     // 查找redis中的验证码缓存
     const captcha = await this.redisService.get(
       `update_password_captcha_${passwordDto.email}`,
@@ -327,7 +327,7 @@ export class UserService {
 
     try {
       await this.userRepository.save(foundUser);
-      await this.redisService.delete(
+      await this.redisService.del(
         `update_password_captcha_${passwordDto.email}`,
       );
       return '密码修改成功';
@@ -343,7 +343,7 @@ export class UserService {
    * @param updateUserDto 修改用户信息接口请求参数格式
    * @returns
    */
-  async update(userId: number, updateUserDto: UpdateUserDto) {
+  async update(userId: string, updateUserDto: UpdateUserDto) {
     const captcha = await this.redisService.get(
       `update_user_captcha_${updateUserDto.email}`,
     );
@@ -369,9 +369,7 @@ export class UserService {
 
     try {
       await this.userRepository.save(foundUser);
-      await this.redisService.delete(
-        `update_user_captcha_${updateUserDto.email}`,
-      );
+      await this.redisService.del(`update_user_captcha_${updateUserDto.email}`);
       return '用户信息修改成功';
     } catch (e) {
       this.logger.error(e, UserService);
@@ -383,7 +381,7 @@ export class UserService {
    * 冻结用户
    * @param id 用户ID
    */
-  async freezeUserById(id: number) {
+  async freezeUserById(id: string) {
     const user = await this.userRepository.findOneBy({
       id,
     });

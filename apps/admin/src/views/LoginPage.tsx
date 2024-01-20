@@ -11,7 +11,7 @@ import {
   useFormRules
 } from '@/hooks/useForm'
 import type { LoginUser } from '@/types'
-import { useTokenStore } from '@/stores'
+import { useTokenStore } from '@/stores/useTokenStore'
 import router from '@/router'
 export default defineComponent({
   name: 'LoginPage',
@@ -124,8 +124,10 @@ export default defineComponent({
         tokenState.setRefreshToken(refreshToken)
         router.push('/home')
       } catch (err: any) {
+        const formDom = formDomRef.value!
         isLoading.value = false
         message.error(err.data || '系统繁忙，请稍后再试')
+        formDom.resetFields('captcha')
         await getUserLoginCaptcha()
       }
     }

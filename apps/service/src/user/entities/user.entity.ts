@@ -4,10 +4,12 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
+  // PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Role } from './role.entity';
+import { v4 as uuidv4 } from 'uuid';
 /**
  * 用户表结构
  */
@@ -15,8 +17,12 @@ import { Role } from './role.entity';
   name: 'users',
 })
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
+  constructor() {
+    this.id = uuidv4();
+  }
+  // @PrimaryGeneratedColumn()
+  @PrimaryColumn('uuid')
+  id: string;
 
   @Column({
     length: 50,

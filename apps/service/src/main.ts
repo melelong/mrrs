@@ -8,7 +8,7 @@ import { UnloginFilter } from './user/filters/unlogin.filter';
 import { CustomExceptionFilter } from './user/filters/custom-exception.filter';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { getWhiteList } from './utils';
-
+import helmet from 'helmet';
 async function bootstrap() {
   // 根据根模块创建服务
   const app = await NestFactory.create(AppModule);
@@ -21,11 +21,14 @@ async function bootstrap() {
   // 获取cors 相关配置
   const { origin_whiteList, methods_whiteList } =
     configService.get('cors_server');
+  // 获取 helmet 相关配置
+  const { xDnsPrefetchControl, xFrameOptions, strictTransportSecurity } =
+    configService.get('helmet_server');
   // 获取origin白名单和methods白名单
   const origin = getWhiteList(origin_whiteList);
   const methods = getWhiteList(methods_whiteList);
   // 获取nest 服务配置
-  const { path, port } = configService.get('nest_server');
+  const { path, port: nest_port } = configService.get('nest_server');
   // 获取swagger接口文档 相关配置
   const {
     title,
@@ -44,6 +47,19 @@ async function bootstrap() {
     origin,
     methods,
   });
+  // 开启helmet
+  app.use(
+    helmet({
+      // 是否启用 DNS 预取
+      xDnsPrefetchControl: { allow: xDnsPrefetchControl },
+      // 减轻点击劫持攻击
+      xFrameOptions: { action: xFrameOptions },
+      strictTransportSecurity: {
+        maxAge: strictTransportSecurity.maxAge,
+        preload: strictTransportSecurity.preload,
+      },
+    }),
+  );
   // 开启全局通道
   app.useGlobalPipes(new ValidationPipe());
   // 开启全局响应的格式化
@@ -74,6 +90,6 @@ async function bootstrap() {
   // 接口文档访问路径
   SwaggerModule.setup(swagger_server_path, app, document);
   // 服务端口监听
-  await app.listen(port);
+  await app.listen(nest_port);
 }
 bootstrap();
