@@ -6,7 +6,9 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { map, Observable } from 'rxjs';
-// 响应拦截器
+/**
+ * 全局响应的格式化
+ */
 @Injectable()
 export class FormatResponseInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {

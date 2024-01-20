@@ -13,7 +13,9 @@ export class UnLoginException {
     this.message = message;
   }
 }
-
+/**
+ * 没登录的全局异常处理
+ */
 @Catch(UnLoginException)
 export class UnloginFilter implements ExceptionFilter {
   catch(exception: UnLoginException, host: ArgumentsHost) {

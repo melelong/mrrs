@@ -1,7 +1,9 @@
 import { Catch, ArgumentsHost, ExceptionFilter } from '@nestjs/common';
 import { ThrottlerException } from '@nestjs/throttler';
 import { Response } from 'express';
-
+/**
+ * 过滤出限流响应，自定义限流响应
+ */
 @Catch(ThrottlerException)
 export class CustomThrottlerExceptionFilter implements ExceptionFilter {
   catch(exception: ThrottlerException, host: ArgumentsHost) {
