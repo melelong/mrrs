@@ -26,9 +26,18 @@ export class Permission {
     comment: '权限描述',
   })
   description: string;
-  @CreateDateColumn()
+
+  @CreateDateColumn({
+    type: 'datetime',
+    default: () => 'CURRENT_TIMESTAMP',
+    comment: '创建时间',
+  })
   createTime: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({
+    type: 'datetime',
+    default: () => 'CURRENT_TIMESTAMP',
+    comment: '更新时间',
+  })
   updateTime: Date;
 }

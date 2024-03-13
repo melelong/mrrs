@@ -38,30 +38,33 @@ export class LoginGuard implements CanActivate {
   canActivate(
     context: ExecutionContext, // 执行上下文对象
   ): boolean | Promise<boolean> | Observable<boolean> {
-    // 取出上下文对象的请求
-    const request: Request = context.switchToHttp().getRequest();
-    // 从反射器中获取 require-login 元数据，判断当前路由是否需要登录才能访问
-    const requireLogin = this.reflector.getAllAndOverride('require-login', [
-      context.getClass(), // 获取类的元数据
-      context.getHandler(), // 获取方法的元数据
-    ]);
-    // 该路由没有标记元数据require-login
-    if (!requireLogin) {
-      return true;
-    }
-    // 取出请求头里的authorization
-    const authorization = request.headers.authorization;
-    // 前端没有传token
-    if (!authorization) {
-      // throw new UnauthorizedException('用户未登录');
-      throw new UnLoginException();
-    }
-
     try {
-      // 获取前端传过来的token
-      const token = authorization.split(' ')[1];
+      // 取出上下文对象的请求
+      const request: Request = context.switchToHttp().getRequest();
+      // 从反射器中获取 require-login 元数据，判断当前路由是否需要登录才能访问
+      const requireLogin = this.reflector.getAllAndOverride('require-login', [
+        context.getClass(), // 获取类的元数据
+        context.getHandler(), // 获取方法的元数据
+      ]);
+      // 该路由没有标记元数据require-login
+      if (!requireLogin) {
+        return true;
+      }
+      // 取出请求里的token
+      let reqToken: string;
+      // 尝试在请求cookie取token
+      reqToken = request.cookies.accessToken;
+      // cookie没有token
+      if (!reqToken) {
+        // 尝试在请求headers取token
+        reqToken = request.headers.authorization.split(' ')[1];
+        // headers没有token
+        if (!reqToken) {
+          throw new UnLoginException();
+        }
+      }
       // 解析token
-      const data = this.jwtService.verify<JwtUserData>(token);
+      const data = this.jwtService.verify<JwtUserData>(reqToken);
       // 把token中的用户信息放到请求中，方便给权限守卫鉴权
       request.user = {
         userId: data.userId,

@@ -1,2 +1,2 @@
 export * as useForm from './useForm'
-export * as useStorage from './useStorage'
+export * as useCache from './useCache'

@@ -1,5 +1,5 @@
 <template>
   <a-style-provider hash-priority="high">
-    <router-view></router-view>
+    <RouterView />
   </a-style-provider>
 </template>
