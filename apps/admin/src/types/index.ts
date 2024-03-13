@@ -42,3 +42,6 @@ export type UpdateUserPassword = {
  * 表单类型
  */
 export type formRefType = LoginUser | RegisterUser | UpdateUser | UpdateUserPassword
+
+// 对象工具类型
+export type Recordable<T = any> = Record<string, T>

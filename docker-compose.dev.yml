@@ -55,7 +55,7 @@ services:
     environment:
       - REDIS_PASSWORD=Aa123456
     ports:
-      - '6379:6379'
+      - '8093:6379'
     volumes:
       - ./docker-volumes/redis/data:/data
       - ./docker-volumes/redis/config:/etc/redis
@@ -75,7 +75,7 @@ services:
       context: .
       dockerfile: ./apps/admin/Dockerfile
     ports:
-      - '8093:80'
+      - '8094:80'
     volumes:
       - ./docker-volumes/admin/config:/etc/nginx
       - ./docker-volumes/admin/log:/var/log/nginx
@@ -94,7 +94,7 @@ services:
       context: .
       dockerfile: ./apps/frontend_user/Dockerfile
     ports:
-      - '8094:80'
+      - '8095:80'
     networks:
       dev_mrrs_network:
         ipv4_address: 192.168.3.6
