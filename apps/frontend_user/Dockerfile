@@ -6,6 +6,8 @@ FROM nginx:latest AS nginx
 
 # 使用前面定义的 base 镜像作为构建阶段的基础镜像
 FROM base AS builder
+# 替换默认的软件源为阿里云镜像源
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 # 安装依赖包 libc6-compat，用于兼容性支持
 RUN apk add --no-cache libc6-compat
@@ -31,6 +33,9 @@ RUN turbo prune frontend_user --docker
 
 # 使用前面定义的 base 镜像作为安装阶段的基础镜像
 FROM base AS installer
+
+# 替换默认的软件源为阿里云镜像源
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 # 安装依赖包 libc6-compat，用于兼容性支持
 RUN apk add --no-cache libc6-compat

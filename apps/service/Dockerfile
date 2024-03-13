@@ -4,6 +4,9 @@ FROM node:20.10.0-alpine3.19 AS base
 # 第二阶段，安装依赖库，并使用 Turbo 工具清理冗余文件（service 目录）并生成 Docker 镜像
 FROM base AS builder
 
+# 替换默认的软件源为阿里云镜像源
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
 # 安装 libc6-compat 库，使得系统能够兼容 glibc 的二进制文件
 RUN apk add --no-cache libc6-compat
 RUN apk update
@@ -24,6 +27,9 @@ RUN turbo prune service --docker
 
 # 第三阶段，安装依赖库，并将编译后的代码和配置文件复制到容器中，使用 Turbo 工具构建项目
 FROM base AS installer
+
+# 替换默认的软件源为阿里云镜像源
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 
 # 安装 libc6-compat 库，使得系统能够兼容 glibc 的二进制文件
 RUN apk add --no-cache libc6-compat
