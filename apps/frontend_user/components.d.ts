@@ -7,16 +7,17 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    AStyleProvider: typeof import('ant-design-vue/es')['StyleProvider']
-    HelloWorld: (typeof import('./src/components/HelloWorld.vue'))['default']
-    IconCommunity: (typeof import('./src/components/icons/IconCommunity.vue'))['default']
-    IconDocumentation: (typeof import('./src/components/icons/IconDocumentation.vue'))['default']
-    IconEcosystem: (typeof import('./src/components/icons/IconEcosystem.vue'))['default']
-    IconSupport: (typeof import('./src/components/icons/IconSupport.vue'))['default']
-    IconTooling: (typeof import('./src/components/icons/IconTooling.vue'))['default']
-    RouterLink: typeof import('vue-router')['RouterLink']
-    RouterView: typeof import('vue-router')['RouterView']
-    TheWelcome: (typeof import('./src/components/TheWelcome.vue'))['default']
-    WelcomeItem: (typeof import('./src/components/WelcomeItem.vue'))['default']
+    AStyleProvider: (typeof import('ant-design-vue/es'))['StyleProvider']
+    FormLayout: (typeof import('./src/components/PageLayout/FormLayout/index.vue'))['default']
+    HomeContent: (typeof import('./src/components/PageLayout/HomeLayout/HomeContent.vue'))['default']
+    HomeHeader: (typeof import('./src/components/PageLayout/HomeLayout/HomeHeader.vue'))['default']
+    HomeLayout: (typeof import('./src/components/PageLayout/HomeLayout/index.vue'))['default']
+    HomeSider: (typeof import('./src/components/PageLayout/HomeLayout/HomeSider.vue'))['default']
+    LoginForm: (typeof import('./src/components/Forms/LoginForm.vue'))['default']
+    RegisterForm: (typeof import('./src/components/Forms/RegisterForm.vue'))['default']
+    RouterLink: (typeof import('vue-router'))['RouterLink']
+    RouterView: (typeof import('vue-router'))['RouterView']
+    UpdatePasswordForm: (typeof import('./src/components/Forms/UpdatePasswordForm.vue'))['default']
+    UpdateUserForm: (typeof import('./src/components/Forms/UpdateUserForm.vue'))['default']
   }
 }

@@ -8,6 +8,8 @@ import {
   Post,
   Query,
   Headers,
+  Res,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -27,6 +29,7 @@ import {
 import { LoginUserVo } from './vo/login-user.vo';
 import { RefreshTokenVo } from './vo/refresh-token.vo';
 import { UserListVo } from './vo/user-list.vo';
+import { Response, Request } from 'express';
 @ApiTags('用户管理模块')
 @Controller('user')
 export class UserController {
@@ -81,13 +84,24 @@ export class UserController {
     @Ip() ip: string,
     @Headers('Origin') origin: string,
     @Headers('User-Agent') ua: string,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    const vo = await this.userService.login(loginUser, false, {
-      ip,
-      origin,
-      ua,
-    });
+    const vo = await this.userService.login(
+      loginUser,
+      false,
+      {
+        ip,
+        origin,
+        ua,
+      },
+      res,
+    );
     return vo;
+  }
+
+  @Post('logOut')
+  async logOut(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    return await this.userService.logOut(req, res);
   }
 
   /**
@@ -112,8 +126,17 @@ export class UserController {
     type: RefreshTokenVo,
   })
   @Get('refresh')
-  async refresh(@Query('refreshToken') refreshToken: string) {
-    const newToken = await this.userService.refresh(refreshToken, false);
+  async refresh(
+    @Query('refreshToken') refreshToken: string,
+    @Res({ passthrough: true }) res: Response,
+    @Req() req: Request,
+  ) {
+    const cookie = req.cookies.refreshToken;
+    if (cookie) {
+      refreshToken = cookie;
+    }
+    console.log(refreshToken);
+    const newToken = await this.userService.refresh(refreshToken, false, res);
     return newToken;
   }
 
@@ -144,12 +167,18 @@ export class UserController {
     @Ip() ip: string,
     @Headers('Origin') origin: string,
     @Headers('User-Agent') ua: string,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    const vo = await this.userService.login(loginUser, true, {
-      ip,
-      origin,
-      ua,
-    });
+    const vo = await this.userService.login(
+      loginUser,
+      true,
+      {
+        ip,
+        origin,
+        ua,
+      },
+      res,
+    );
     return vo;
   }
 
@@ -175,8 +204,16 @@ export class UserController {
     type: RefreshTokenVo,
   })
   @Get('admin/refresh')
-  async adminRefresh(@Query('refreshToken') refreshToken: string) {
-    const newToken = await this.userService.refresh(refreshToken, true);
+  async adminRefresh(
+    @Query('refreshToken') refreshToken: string,
+    @Res({ passthrough: true }) res: Response,
+    @Req() req: Request,
+  ) {
+    const cookie = req.cookies.refreshToken;
+    if (cookie) {
+      refreshToken = cookie;
+    }
+    const newToken = await this.userService.refresh(refreshToken, true, res);
     return newToken;
   }
 
@@ -204,20 +241,19 @@ export class UserController {
     const user = await this.userService.findUserDetailById(userId);
     const vo = new UserDetailVo();
     vo.id = user.id;
-    vo.email = user.email;
     vo.username = user.username;
+    vo.nickName = user.nickName;
+    vo.email = user.email;
     vo.headPic = user.headPic;
     vo.phoneNumber = user.phoneNumber;
-    vo.nickName = user.nickName;
-    vo.createTime = user.createTime;
     vo.isFrozen = user.isFrozen;
+    vo.createTime = user.createTime;
 
     return vo;
   }
 
   /**
    * 修改密码接口路由
-   * @param userId 用户ID
    * @param passwordDto 修改密码接口请求参数格式
    * @returns
    */

@@ -19,7 +19,7 @@ services:
       - template_mysql
       - template_redis
     ports:
-      - '3001:3001'
+      - '8090:3001'
     networks:
       app_network:
         ipv4_address: 192.168.3.2
@@ -33,8 +33,8 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=Aa123456
     ports:
-      - '3306:3306'
-      - '33060:33060'
+      - '8091:3306'
+      - '8092:33060'
     volumes:
       - ./docker-volumes/mysql/data:/var/lib/mysql
       - ./docker-volumes/mysql/config:/etc/mysql/conf.d
@@ -63,36 +63,36 @@ services:
       app_network:
         ipv4_address: 192.168.3.4
 
-  # # admin
-  # template_admin:
-  #   # 自动重启
-  #   restart: always
-  #   container_name: template_admin
-  #   user: root
-  #   build:
-  #     context: .
-  #     dockerfile: ./apps/admin/Dockerfile
-  #   ports:
-  #     - '8081:80'
-  #   volumes:
-  #     - ./docker-volumes/admin/config:/etc/nginx
-  #     - ./docker-volumes/admin/log:/var/log/nginx
-  #     - ./docker-volumes/admin/html:/usr/share/nginx/html
-  #   networks:
-  #     app_network:
-  #       ipv4_address: 192.168.3.5
+  # admin
+  template_admin:
+    # 自动重启
+    restart: always
+    container_name: template_admin
+    user: root
+    build:
+      context: .
+      dockerfile: ./apps/admin/Dockerfile
+    ports:
+      - '8093:80'
+    volumes:
+      - ./docker-volumes/admin/config:/etc/nginx
+      - ./docker-volumes/admin/log:/var/log/nginx
+      - ./docker-volumes/admin/html:/usr/share/nginx/html
+    networks:
+      app_network:
+        ipv4_address: 192.168.3.5
 
-  # # docs
-  # template_docs:
-  #   # 自动重启
-  #   restart: always
-  #   container_name: template_docs
-  #   user: root
-  #   build:
-  #     context: .
-  #     dockerfile: ./apps/docs/Dockerfile
-  #   ports:
-  #     - '8082:80'
-  #   networks:
-  #     app_network:
-  #       ipv4_address: 192.168.3.6
+  # frontend_user
+  template_frontend_user:
+    # 自动重启
+    restart: always
+    container_name: template_frontend_user
+    user: root
+    build:
+      context: .
+      dockerfile: ./apps/frontend_user/Dockerfile
+    ports:
+      - '8094:80'
+    networks:
+      app_network:
+        ipv4_address: 192.168.3.6

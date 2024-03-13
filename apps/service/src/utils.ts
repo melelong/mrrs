@@ -25,6 +25,11 @@ export async function sha256(
 ): Promise<string> {
   return crypto.sha256(str, salt);
 }
+/**
+ * 获取盐
+ * @param str 盐
+ * @returns
+ */
 export function getSalt(str: string): CryptoJS.lib.WordArray {
   return crypto.wordArray(str);
 }
@@ -35,21 +40,37 @@ export function generateParseIntPipe(name: string) {
     },
   });
 }
-// env白名单配置字符串转成数组
+
+/**
+ * env白名单配置字符串转成数组
+ * @param whiteList 白名单
+ * @returns
+ */
 export function getWhiteList(whiteList: string) {
   return whiteList.split(',');
 }
-// 判断是否为资源请求
+
+/**
+ * 判断是否为资源请求
+ * @param url url地址
+ * @returns
+ */
 export function isRes(url: string): boolean {
   return /\/res\//.test(url);
 }
 
-// 获取项目运行环境
+/**
+ * 获取项目运行环境
+ * @returns
+ */
 export const getEnv = () => {
   return process.env.RUNNING_ENV;
 };
 
-// 读取项目配置
+/**
+ * 读取项目配置
+ * @returns
+ */
 export const getConfig = () => {
   const environment = getEnv();
   const yamlPath = path.join(
@@ -60,3 +81,17 @@ export const getConfig = () => {
   const config = parse(file);
   return config;
 };
+
+/**
+ * 文件大小(M)
+ * @param num 多少M
+ * @returns
+ */
+export const getM = (num: number) => 1024 * 1024 * num;
+
+/**
+ * 文件大小(G)
+ * @param num 多少G
+ * @returns
+ */
+export const getG = (num: number) => 1024 * 1024 * 1024 * num;

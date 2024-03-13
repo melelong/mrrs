@@ -1,5 +1,6 @@
 .DS_Store
 node_modules
+docker-volumes
 .turbo
 dist
 dist-ssr

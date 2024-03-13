@@ -23,6 +23,7 @@ import { getConfig } from './utils';
 import { CheckModule } from './check/check.module';
 import { ThrottlerGuard, ThrottlerModule, seconds } from '@nestjs/throttler';
 import { ThrottlerStorageRedisService } from 'nestjs-throttler-storage-redis';
+import { UploadModule } from './upload/upload.module';
 interface RedisOptions {
   host: string;
   port: number;
@@ -86,14 +87,16 @@ interface RedisOptions {
       },
       inject: [ConfigService],
     }),
-    // 导入用户模块
-    UserModule,
-    // 导入检测模块
-    CheckModule,
     // 导入reids模块
     RedisModule,
     // 导入mysql模块
     MysqlModule,
+    // 导入文件上传模块
+    UploadModule,
+    // 导入用户模块
+    UserModule,
+    // 导入检测模块
+    CheckModule,
     // 导入邮件模块
     EmailModule,
   ],

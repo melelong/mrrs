@@ -5,11 +5,10 @@ import {
   JoinTable,
   ManyToMany,
   PrimaryColumn,
-  // PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Role } from './role.entity';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 } from 'uuid';
 /**
  * 用户表结构
  */
@@ -18,9 +17,9 @@ import { v4 as uuidv4 } from 'uuid';
 })
 export class User {
   constructor() {
-    this.id = uuidv4();
+    this.id = v4();
   }
-  // @PrimaryGeneratedColumn()
+
   @PrimaryColumn('uuid')
   id: string;
 
@@ -76,10 +75,18 @@ export class User {
   })
   isAdmin: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({
+    type: 'datetime',
+    default: () => 'CURRENT_TIMESTAMP',
+    comment: '创建时间',
+  })
   createTime: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({
+    type: 'datetime',
+    default: () => 'CURRENT_TIMESTAMP',
+    comment: '更新时间',
+  })
   updateTime: Date;
 
   // 创建中间表user_roles

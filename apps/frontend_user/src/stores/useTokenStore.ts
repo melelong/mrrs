@@ -1,17 +1,31 @@
-import { crypto } from '@repo/utils/es'
 import { defineStore } from 'pinia'
+import router from '@/router'
+import { userApi } from '@/uitls'
+import { message } from 'ant-design-vue'
+import { PAGE_ROUTERS } from '@/router/constant'
+import {
+  getInfoCache,
+  getTokenCache,
+  setInfoCache,
+  setTokenCache,
+  delInfoCache,
+  delTokenCache
+} from './storesHelp'
 /**
- * token状态类型
+ * 缓存名
  */
-type TokenStore = {
-  userInfo: any
-  accessToken: string
-  refreshToken: string
+const KEYNAME = {
+  // 用户信息
+  useInfo: 'USER_INFO',
+  // 角色信息
+  roles: 'ROLES',
+  // 权限信息
+  permissions: 'PERMISSIONS',
+  // 访问token
+  accessToken: 'ACCESS_TOKEN',
+  // 刷新token
+  refreshToken: 'REFRESH_TOKEN'
 }
-const SALT1 = 'melelong'
-const SALT2 = '会议室预订系统'
-const KEY = crypto.wordArray(SALT1)
-const IV = crypto.wordArray(SALT2)
 export const useTokenStore = defineStore('token', {
   /**
    * token状态
@@ -19,10 +33,12 @@ export const useTokenStore = defineStore('token', {
    */
   state: (): TokenStore => ({
     // 需要加密
-    userInfo: {},
+    userInfo: null,
+    roles: null,
+    permissions: null,
     // 不需要加密
-    accessToken: '',
-    refreshToken: ''
+    accessToken: null,
+    refreshToken: null
   }),
   getters: {
     /**
@@ -31,27 +47,29 @@ export const useTokenStore = defineStore('token', {
      * @returns
      */
     getUserInfo({ userInfo }): TokenStore['userInfo'] {
-      // 缓存
-      if (JSON.stringify(userInfo) !== '{}') return userInfo
-      // sessionStorage
-      const session = sessionStorage.getItem('USER_INFO')
-      if (session) {
-        // _开头是明文
-        const _session = JSON.parse(crypto.aesDecrypt(session, KEY, IV))
-        this.userInfo = _session
-        localStorage.setItem('USER_INFO', session)
-        return _session
-      }
-      // localStorage
-      const local = localStorage.getItem('USER_INFO')
-      if (local) {
-        // _开头是明文
-        const _local = JSON.parse(crypto.aesDecrypt(local, KEY, IV))
-        this.userInfo = _local
-        sessionStorage.setItem('USER_INFO', local)
-        return _local
-      }
-      return {}
+      return getInfoCache<TokenStore['userInfo']>(this, KEYNAME.useInfo, 'userInfo', userInfo, {})
+    },
+    /**
+     * 获取角色信息
+     * @param param0 角色信息
+     * @returns
+     */
+    getRoles({ roles }): TokenStore['roles'] {
+      return getInfoCache<TokenStore['roles']>(this, KEYNAME.roles, 'roles', roles, [])
+    },
+    /**
+     * 设置权限信息
+     * @param param0 权限信息
+     * @returns
+     */
+    getPermissions({ permissions }): TokenStore['permissions'] {
+      return getInfoCache<TokenStore['permissions']>(
+        this,
+        KEYNAME.permissions,
+        'permissions',
+        permissions,
+        []
+      )
     },
     /**
      * 获取访问Token
@@ -59,23 +77,13 @@ export const useTokenStore = defineStore('token', {
      * @returns
      */
     getAccessToken({ accessToken }): TokenStore['accessToken'] {
-      // 缓存
-      if (accessToken !== '') return accessToken
-      // sessionStorage
-      const session = sessionStorage.getItem('ACCESS_TOKEN')
-      if (session) {
-        this.accessToken = session
-        localStorage.setItem('ACCESS_TOKEN', session)
-        return session
-      }
-      // localStorage
-      const local = localStorage.getItem('ACCESS_TOKEN')
-      if (local) {
-        this.accessToken = local
-        sessionStorage.setItem('ACCESS_TOKEN', local)
-        return local
-      }
-      return ''
+      return getTokenCache<TokenStore['accessToken']>(
+        this,
+        KEYNAME.accessToken,
+        'accessToken',
+        accessToken,
+        ''
+      )
     },
     /**
      * 获取刷新Token
@@ -83,63 +91,73 @@ export const useTokenStore = defineStore('token', {
      * @returns
      */
     getRefreshToken({ refreshToken }): TokenStore['refreshToken'] {
-      // 缓存
-      if (refreshToken !== '') return refreshToken
-      // sessionStorage
-      const session = sessionStorage.getItem('REFRESH_TOKEN')
-      if (session) {
-        this.refreshToken = session
-        localStorage.setItem('REFRESH_TOKEN', session)
-        return session
-      }
-      // localStorage
-      const local = localStorage.getItem('REFRESH_TOKEN')
-      if (local) {
-        this.refreshToken = local
-        sessionStorage.setItem('REFRESH_TOKEN', local)
-        return local
-      }
-      return ''
+      return getTokenCache<TokenStore['refreshToken']>(
+        this,
+        KEYNAME.refreshToken,
+        'refreshToken',
+        refreshToken,
+        ''
+      )
     }
   },
   actions: {
     /**
      * 设置用户信息
-     * @param newUserInfo 用户信息
+     * @param value 用户信息
      */
-    async setUserInfo(newUserInfo: any) {
-      // _开头的是密文
-      const _newUserInfo = crypto.aesEncryption(JSON.stringify(newUserInfo), KEY, IV)
-      // 缓存
-      this.userInfo = newUserInfo
-      // sessionStorage
-      sessionStorage.setItem('USER_INFO', _newUserInfo)
-      // localStorage
-      localStorage.setItem('USER_INFO', _newUserInfo)
+    setUserInfo(value: TokenStore['userInfo']) {
+      setInfoCache<TokenStore['userInfo']>(this, KEYNAME.useInfo, 'userInfo', value)
+    },
+
+    /**
+     * 设置角色信息
+     * @param value 角色信息
+     */
+    setRoles(value: TokenStore['roles']) {
+      setInfoCache<TokenStore['roles']>(this, KEYNAME.roles, 'roles', value)
+    },
+
+    /**
+     * 设置权限信息
+     * @param value 权限信息
+     */
+    setPermissions(value: TokenStore['permissions']) {
+      setInfoCache<TokenStore['permissions']>(this, KEYNAME.permissions, 'permissions', value)
     },
     /**
      * 设置访问Token
-     * @param newAccessToken 访问Token
+     * @param value 访问Token
      */
-    async setAccessToken(newAccessToken: string) {
-      // 缓存
-      this.accessToken = newAccessToken
-      // sessionStorage
-      sessionStorage.setItem('ACCESS_TOKEN', newAccessToken)
-      // localStorage
-      localStorage.setItem('ACCESS_TOKEN', newAccessToken)
+    setAccessToken(value: TokenStore['accessToken']) {
+      setTokenCache(this, KEYNAME.accessToken, 'accessToken', value!)
     },
     /**
      * 设置刷新Token
-     * @param newRefreshToken 刷新Token
+     * @param value 刷新Token
      */
-    async setRefreshToken(newRefreshToken: string) {
-      // 缓存
-      this.refreshToken = newRefreshToken
-      // sessionStorage
-      sessionStorage.setItem('REFRESH_TOKEN', newRefreshToken)
-      // localStorage
-      localStorage.setItem('REFRESH_TOKEN', newRefreshToken)
+    setRefreshToken(value: TokenStore['refreshToken']) {
+      setTokenCache(this, KEYNAME.refreshToken, 'refreshToken', value!)
+    },
+    /**
+     * 登出
+     */
+    async LogOut() {
+      const { data } = await userApi.user.logOut()
+      message.success(data)
+      // 清除缓存
+      this.$reset()
+      // 用户信息
+      delInfoCache(KEYNAME.useInfo)
+      // 角色信息
+      delInfoCache(KEYNAME.roles)
+      // 权限信息
+      delInfoCache(KEYNAME.permissions)
+      // 访问Token
+      delTokenCache(KEYNAME.accessToken)
+      // 刷新Token
+      delTokenCache(KEYNAME.refreshToken)
+      // 返回登录页
+      router.push(PAGE_ROUTERS.LOGIN)
     }
   }
 })

@@ -5,8 +5,10 @@
   "license": "MIT",
   "scripts": {
     "commit": "cz",
-    "docker:start": "docker-compose up",
-    "docker:stop": "docker-compose stop",
+    "docker:dev:start": "docker-compose -f docker-compose.dev.yml up",
+    "docker:dev:stop": "docker-compose -f docker-compose.dev.yml stop",
+    "docker:prod:start": "docker-compose -f docker-compose.prod.yml up",
+    "docker:prod:stop": "docker-compose -f docker-compose.prod.yml stop",
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",

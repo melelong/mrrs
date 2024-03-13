@@ -40,7 +40,7 @@ export class EmailController {
     type: String,
   })
   @Get('register-captcha')
-  async captcha(@Query() query: CaptchaDto) {
+  async registerCaptcha(@Query() query: CaptchaDto) {
     const { address } = query;
     const code = Math.random().toString().slice(2, 8);
 

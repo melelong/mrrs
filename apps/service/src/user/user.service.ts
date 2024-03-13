@@ -22,6 +22,7 @@ import { UpdateUserPasswordDto } from './dto/update-user-password.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { RefreshTokenVo } from './vo/refresh-token.vo';
 import { UserListVo } from './vo/user-list.vo';
+import { Response, Request } from 'express';
 interface HashOptions {
   ip: string;
   origin: string;
@@ -112,12 +113,14 @@ export class UserService {
    * @param loginUserDto 登录接口请求参数格式
    * @param isAdmin 是否为管理员
    * @param hashOptions 生成hash的选项
+   * @param res 响应对象
    * @returns
    */
   async login(
     loginUserDto: LoginUserDto,
     isAdmin: boolean,
     hashOptions: HashOptions,
+    res: Response,
   ) {
     await this.setSalt();
     const typeName = `${isAdmin ? 'admin' : 'user'}`;
@@ -140,16 +143,15 @@ export class UserService {
     if (user.password !== (await md5(loginUserDto.password, this.salt))) {
       throw new HttpException('密码错误', HttpStatus.BAD_REQUEST);
     }
-    try {
-      // 对比验证码,统一转成小写，不区分大小写
-      const captchaName = `${typeName}_login_${hash.substring(0, 8)}`;
-      const captcha: string = await this.redisService.get(captchaName);
-      if (captcha.toLowerCase() !== loginUserDto.captcha.toLowerCase()) {
-        throw new HttpException('验证码错误', HttpStatus.BAD_REQUEST);
-      }
-      this.redisService.del(captchaName);
-    } catch (e) {
+    // 对比验证码,统一转成小写，不区分大小写
+    const captchaName = `${typeName}_login_${hash.substring(0, 8)}`;
+    const captcha: string = await this.redisService.get(captchaName);
+    if (Object.is(captcha, null)) {
       throw new HttpException('验证码过期', HttpStatus.BAD_REQUEST);
+    }
+    if (captcha.toLowerCase() !== loginUserDto.captcha.toLowerCase()) {
+      this.redisService.del(captchaName);
+      throw new HttpException('验证码错误', HttpStatus.BAD_REQUEST);
     }
 
     const vo = new LoginUserVo();
@@ -198,9 +200,73 @@ export class UserService {
           '7d',
       },
     );
+    // 缓存到redis中
+    this.redisService.set(`jwt_${user.id}`, vo.refreshToken, 7 * 24 * 60 * 60);
+    // 设置cookie accessToken
+    res.cookie('accessToken', vo.accessToken, {
+      domain: this.configService.get('jwt_server').cookie_domain,
+      httpOnly: true,
+      maxAge:
+        this.configService.get('jwt_server').cookie_access_token_maxAge *
+        60 *
+        1000,
+    });
+    res.cookie('refreshToken', vo.refreshToken, {
+      domain: this.configService.get('jwt_server').cookie_domain,
+      httpOnly: true,
+      maxAge:
+        this.configService.get('jwt_server').cookie_refresh_token_maxAge *
+        24 *
+        60 *
+        60 *
+        1000,
+    });
+
     return vo;
   }
-
+  /**
+   * 登出
+   * @param res 响应对象
+   * @returns
+   */
+  async logOut(req: Request, res: Response) {
+    // 定义jwt用户数据接口类型
+    interface JwtUserData {
+      userId: number;
+      username: string;
+      roles: string[];
+      permissions: Permission[];
+    }
+    try {
+      // 取出请求里的token
+      let reqToken: string;
+      // 尝试在请求cookie取token
+      reqToken = req.cookies.accessToken;
+      // cookie没有token
+      if (!reqToken) {
+        // 尝试在请求headers取token
+        reqToken = req.headers.authorization.split(' ')[1];
+      }
+      const { userId } = this.jwtService.verify<JwtUserData>(reqToken);
+      // 删除redis缓存里的用户数据
+      this.redisService.del(`jwt_${userId}`);
+    } catch (error: any) {
+      // 没有任何token
+      return '退出登录成功';
+    }
+    // 让cookie失效
+    res.cookie('accessToken', '', {
+      domain: this.configService.get('jwt_server').cookie_domain,
+      httpOnly: true,
+      expires: new Date(Date.now() - 1),
+    });
+    res.cookie('refreshToken', '', {
+      domain: this.configService.get('jwt_server').cookie_domain,
+      httpOnly: true,
+      expires: new Date(Date.now() - 1),
+    });
+    return '退出登录成功';
+  }
   /**
    * 查询单个用户服务
    * @param userId 用户ID
@@ -239,7 +305,8 @@ export class UserService {
    * @param isAdmin 是否为管理员
    * @returns
    */
-  async refresh(refreshToken: string, isAdmin: boolean) {
+  async refresh(refreshToken: string, isAdmin: boolean, res: Response) {
+    await this.setSalt();
     try {
       // 解析token获取用户数据
       const data = this.jwtService.verify(refreshToken);
@@ -271,8 +338,28 @@ export class UserService {
         },
       );
       const vo = new RefreshTokenVo();
-      vo.access_token = access_token;
-      vo.refresh_token = refresh_token;
+      vo.accessToken = access_token;
+      vo.refreshToken = refresh_token;
+      // 设置cookie accessToken
+      res.cookie('accessToken', vo.accessToken, {
+        domain: this.configService.get('jwt_server').cookie_domain,
+        httpOnly: true,
+        maxAge:
+          this.configService.get('jwt_server').cookie_access_token_maxAge *
+          60 *
+          1000,
+      });
+      res.cookie('refreshToken', vo.refreshToken, {
+        domain: this.configService.get('jwt_server').cookie_domain,
+        httpOnly: true,
+        maxAge:
+          this.configService.get('jwt_server').cookie_refresh_token_maxAge *
+          24 *
+          60 *
+          60 *
+          1000,
+      });
+
       return vo;
     } catch (e) {
       throw new UnauthorizedException('token 已失效，请重新登录');

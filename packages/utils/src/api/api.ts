@@ -1,11 +1,3 @@
-/*
- * 2024-01-04 15:21:41
- * @Github: https://github.com/melelong
- * custom_string_obkoro1~custom_string_obkoro100都可以输出自定义信息
- * @Author: melelong
- * Copyright (c) 2024 by ${git_name_email}, All Rights Reserved.
- * @LastEditors: 可以输入预定的版权声明、个性签名、空行等
- */
 import axios, {
   AxiosInstance,
   AxiosResponse,
@@ -13,10 +5,13 @@ import axios, {
   InternalAxiosRequestConfig
 } from 'axios'
 import { UserApi } from './user'
-
+import { EmailApi } from './email'
+import { UploadApi } from './upload'
 export class Api {
   request: AxiosInstance
   user: UserApi
+  email: EmailApi
+  upload: UploadApi
   constructor(config?: CreateAxiosDefaults) {
     this.request = this.#_create({
       baseURL: import.meta.env.VITE_API_URL,
@@ -26,6 +21,8 @@ export class Api {
     this.interceptorRequest()
     this.interceptorResponse()
     this.user = new UserApi(this.request)
+    this.email = new EmailApi(this.request)
+    this.upload = new UploadApi(this.request)
   }
   #_create(config?: CreateAxiosDefaults): AxiosInstance {
     return axios.create(config)
@@ -45,11 +42,14 @@ export class Api {
     this.request.interceptors.response.use(
       (response: AxiosResponse) => {
         // 解密处理
-        if (response?.status === 200 || response?.status === 201) return response?.data
-        return Promise.reject(response?.data)
+        const data = response.data
+        if (data.code === 200 || data.code === 201) {
+          return data
+        }
+        return Promise.reject(data)
       },
-      ({ response }) => {
-        return Promise.reject(response.data)
+      (error) => {
+        return Promise.reject(error)
       }
     )
   }
